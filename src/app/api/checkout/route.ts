@@ -1,5 +1,5 @@
 import Stripe from "stripe"
-import { auth } from "@/auth"
+import { auth } from "../../../auth"
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!)
 

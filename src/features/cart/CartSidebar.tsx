@@ -1,5 +1,5 @@
 import { Sheet, SheetContent, SheetHeader } from "@/components/ui/sheet"
-import { useCartStore } from "@/store/cartStore"
+import { useCartStore } from "../../store/cartStore"
 import { motion, AnimatePresence } from "framer-motion"
 
 export function CartSidebar() {

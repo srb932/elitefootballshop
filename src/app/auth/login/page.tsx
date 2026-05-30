@@ -11,9 +11,13 @@ const schema = z.object({
 })
 
 export default function LoginPage() {
-  const form = useForm({ resolver: zodResolver(schema) })
+// On dit à useForm d'utiliser le type généré par ton schéma z.infer<typeof schema>
+const form = useForm<z.infer<typeof schema>>({ 
+  resolver: zodResolver(schema) 
+})
 
-  const onSubmit = async (data) => {
+// On précise à TypeScript que 'data' correspond exactement à la structure de ton 'schema'
+const onSubmit = async (data: z.infer<typeof schema>) => {
     await signIn("credentials", { ...data, callbackUrl: "/" })
   }
 

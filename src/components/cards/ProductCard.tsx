@@ -3,7 +3,7 @@
 import { motion } from "framer-motion"
 import Image from "next/image"
 
-export function ProductCard({ product }) {
+export function ProductCard({ product }: { product: any }) {
   return (
     <motion.div
       className="group relative bg-white rounded-none overflow-hidden cursor-pointer"
