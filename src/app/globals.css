@@ -1,8 +1,6 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
-/* Petit bonus pour s'assurer que le fond gris clair s'applique partout */
+/* Ton fond gris pour la boutique */
 body {
   background-color: #f4f6f9;
   margin: 0;
