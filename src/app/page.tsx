@@ -19,24 +19,21 @@ export default function CatalogPage() {
   const [selectedLeague, setSelectedLeague] = useState("Tous")
   const [cart, setCart] = useState<{ id: string; name: string; price: number }[]>([])
   
-  // États pour la navigation et les notifications
   const [view, setView] = useState<"catalog" | "cart">("catalog")
   const [notification, setNotification] = useState<string | null>(null)
   
-  // États pour le formulaire de commande
   const [promoCode, setPromoCode] = useState("")
   const [discount, setDiscount] = useState(0)
 
-  // Fonction pour ajouter au panier avec notification discrète
   const addToCart = (maillot: { id: string; name: string; price: number }) => {
     setCart((prevCart) => [...prevCart, maillot])
     setNotification(`⚡ ${maillot.name} AJOUTÉ !`)
-    setTimeout(() => setNotification(null), 3000) // Disparait après 3 secondes
+    setTimeout(() => setNotification(null), 3000)
   };
 
   const applyPromo = () => {
     if (promoCode.toUpperCase() === "FOOT2026") {
-      setDiscount(10) // 10€ de réduction
+      setDiscount(10)
     } else {
       setDiscount(0)
     }
@@ -61,7 +58,6 @@ export default function CatalogPage() {
       <header className="bg-white border-b-2 border-gray-200 sticky top-0 z-50 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 h-20 flex items-center justify-between">
           
-          {/* Logo cliquable pour revenir aux maillots */}
           <div className="flex flex-col cursor-pointer" onClick={() => setView("catalog")}>
             <span className="text-2xl md:text-3xl font-black tracking-wide text-blue-950 uppercase italic leading-none" style={{ fontFamily: 'Impact, "Arial Black", sans-serif' }}>
               L'ÂME DU MAILLOT
@@ -71,7 +67,6 @@ export default function CatalogPage() {
             </span>
           </div>
 
-          {/* Bouton Panier qui change la vue sans message d'erreur */}
           <div 
             className={`p-2.5 rounded-full relative cursor-pointer transition border-2 ${view === "cart" ? "bg-blue-950 text-white border-blue-950" : "bg-gray-100 hover:bg-gray-200 border-transparent"}`}
             onClick={() => setView("cart")}
@@ -162,7 +157,6 @@ export default function CatalogPage() {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               
-              {/* COLONNE DE GAUCHE : RECAP ET CODE PROMO */}
               <div className="space-y-6">
                 <div className="bg-white border-2 border-gray-200 p-4 rounded">
                   <h3 className="text-sm font-black uppercase tracking-wider text-gray-800 mb-3 border-b pb-1" style={{ fontFamily: '"Arial Black", sans-serif' }}>Articles</h3>
@@ -176,7 +170,6 @@ export default function CatalogPage() {
                   </div>
                 </div>
 
-                {/* BLOC CODE PROMO */}
                 <div className="bg-white border-2 border-gray-200 p-4 rounded">
                   <h3 className="text-sm font-black uppercase tracking-wider text-gray-800 mb-2" style={{ fontFamily: '"Arial Black", sans-serif' }}>Code Promo</h3>
                   <div className="flex gap-2">
@@ -192,14 +185,12 @@ export default function CatalogPage() {
                   {discount > 0 && <p className="text-green-600 text-[11px] font-bold mt-1">✓ Réduction de {discount}€ appliquée !</p>}
                 </div>
 
-                {/* TOTAL */}
                 <div className="bg-blue-950 text-white p-4 rounded flex justify-between items-center font-black" style={{ fontFamily: '"Arial Black", Impact, sans-serif' }}>
                   <span className="tracking-wide">TOTAL À PAYER :</span>
                   <span className="text-xl tracking-wide text-red-500">{totalFinal.toFixed(2)} €</span>
                 </div>
               </div>
 
-              {/* COLONNE DE DROITE : FORMULAIRE DE LIVRAISON & PAIEMENT */}
               <div className="bg-white border-2 border-gray-200 p-4 rounded space-y-4">
                 <h3 className="text-sm font-black uppercase tracking-wider text-gray-800 border-b pb-1" style={{ fontFamily: '"Arial Black", sans-serif' }}>Informations de livraison</h3>
                 
@@ -238,7 +229,7 @@ export default function CatalogPage() {
         </main>
       )}
 
-      {/* --- NOTIFICATION DISCRÈTE EN BAS À DROITE --- */}
+      {/* --- NOTIFICATION DISCRÈTE --- */}
       {notification && (
         <div className="fixed bottom-5 right-5 z-50 bg-black text-white px-5 py-3 rounded border border-gray-800 shadow-2xl animate-bounce text-xs font-black tracking-widest uppercase" style={{ fontFamily: '"Arial Black", Impact, sans-serif' }}>
           {notification}
