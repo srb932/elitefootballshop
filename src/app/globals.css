@@ -1,3 +1,10 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Petit bonus pour s'assurer que le fond gris clair s'applique partout */
+body {
+  background-color: #f4f6f9;
+  margin: 0;
+  padding: 0;
+}
