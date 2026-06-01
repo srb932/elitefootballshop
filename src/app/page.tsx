@@ -2,17 +2,27 @@
 
 import { useState } from "react"
 
+// Configuration de tous tes maillots avec l'avant (.png) et l'arrière (1.png)
 const MOCK_MAILLOTS = [
-  { id: "1", name: "MAILLOT PSG DOMICILE 2026", price: 45.00, oldPrice: 90.00, league: "Ligue 1", club: "PSG", badge: "NOUVEAU" },
-  { id: "2", name: "MAILLOT MARSEILLE DOMICILE 2026", price: 45.00, oldPrice: 85.00, league: "Ligue 1", club: "OM", badge: "" },
-  { id: "3", name: "MAILLOT LYON DOMICILE 2026", price: 45.00, oldPrice: 85.00, league: "Ligue 1", club: "OL", badge: "" },
-  { id: "4", name: "MAILLOT MONACO EXTÉRIEUR 2026", price: 45.00, oldPrice: 90.00, league: "Ligue 1", club: "Monaco", badge: "PROMO" },
-  { id: "6", name: "MAILLOT REAL MADRID DOMICILE 2026", price: 45.00, oldPrice: 90.00, league: "LaLiga", club: "Real Madrid", badge: "POPULAIRE" },
-  { id: "7", name: "MAILLOT FC BARCELONE DOMICILE 2026", price: 45.00, oldPrice: 90.00, league: "LaLiga", club: "FC Barcelone", badge: "PROMO" },
-  { id: "9", name: "MAILLOT ARSENAL DOMICILE 2026", price: 45.00, oldPrice: 90.00, league: "Premier League", club: "Arsenal", badge: "" },
-  { id: "10", name: "MAILLOT MANCHESTER CITY DOMICILE 2026", price: 45.00, oldPrice: 95.00, league: "Premier League", club: "Man City", badge: "POPULAIRE" },
-  { id: "13", name: "MAILLOT BAYERN MUNICH DOMICILE 2026", price: 45.00, oldPrice: 90.00, league: "Bundesliga", club: "Bayern Munich", badge: "" },
-  { id: "15", name: "MAILLOT INTER MILAN DOMICILE 2026", price: 45.00, oldPrice: 90.00, league: "Serie A", club: "Inter Milan", badge: "" },
+  // --- LIGUE 1 ---
+  { id: "1", name: "MAILLOT PSG DOMICILE 2026", price: 45.00, oldPrice: 90.00, league: "Ligue 1", club: "PSG", badge: "NOUVEAU", imageFront: "/maillots/psg.png", imageBack: "/maillots/psg1.png" },
+  { id: "2", name: "MAILLOT MARSEILLE DOMICILE 2026", price: 45.00, oldPrice: 85.00, league: "Ligue 1", club: "OM", badge: "", imageFront: "/maillots/om.png", imageBack: "/maillots/om1.png" },
+  { id: "3", name: "MAILLOT LYON DOMICILE 2026", price: 45.00, oldPrice: 85.00, league: "Ligue 1", club: "OL", badge: "", imageFront: "/maillots/ol.png", imageBack: "/maillots/ol1.png" },
+  { id: "4", name: "MAILLOT MONACO EXTÉRIEUR 2026", price: 45.00, oldPrice: 90.00, league: "Ligue 1", club: "Monaco", badge: "PROMO", imageFront: "/maillots/monaco.png", imageBack: "/maillots/monaco1.png" },
+
+  // --- LALIGA ---
+  { id: "6", name: "MAILLOT REAL MADRID DOMICILE 2026", price: 45.00, oldPrice: 90.00, league: "LaLiga", club: "Real Madrid", badge: "POPULAIRE", imageFront: "/maillots/real-madrid.png", imageBack: "/maillots/real-madrid1.png" },
+  { id: "7", name: "MAILLOT FC BARCELONE DOMICILE 2026", price: 45.00, oldPrice: 90.00, league: "LaLiga", club: "FC Barcelone", badge: "PROMO", imageFront: "/maillots/barca.png", imageBack: "/maillots/barca1.png" },
+
+  // --- PREMIER LEAGUE ---
+  { id: "9", name: "MAILLOT ARSENAL DOMICILE 2026", price: 45.00, oldPrice: 90.00, league: "Premier League", club: "Arsenal", badge: "", imageFront: "/maillots/arsenal.png", imageBack: "/maillots/arsenal1.png" },
+  { id: "10", name: "MAILLOT MANCHESTER CITY DOMICILE 2026", price: 45.00, oldPrice: 95.00, league: "Premier League", club: "Man City", badge: "POPULAIRE", imageFront: "/maillots/man-city.png", imageBack: "/maillots/man-city1.png" },
+
+  // --- BUNDESLIGA ---
+  { id: "13", name: "MAILLOT BAYERN MUNICH DOMICILE 2026", price: 45.00, oldPrice: 90.00, league: "Bundesliga", club: "Bayern Munich", badge: "", imageFront: "/maillots/bayern.png", imageBack: "/maillots/bayern1.png" },
+
+  // --- SERIE A ---
+  { id: "15", name: "MAILLOT INTER MILAN DOMICILE 2026", price: 45.00, oldPrice: 90.00, league: "Serie A", club: "Inter Milan", badge: "", imageFront: "/maillots/inter.png", imageBack: "/maillots/inter1.png" },
 ]
 
 export default function CatalogPage() {
@@ -114,9 +124,25 @@ export default function CatalogPage() {
                   {maillot.badge && (
                     <span className={`absolute top-2 left-2 z-10 text-[10px] font-black uppercase text-white px-2 py-1 rounded ${maillot.badge === "PROMO" ? "bg-red-600" : "bg-green-600"}`} style={{ fontFamily: '"Arial Black", sans-serif' }}>{maillot.badge}</span>
                   )}
-                  <div className="bg-[#f8f9fa] h-48 md:h-64 flex items-center justify-center border-b-2 border-gray-100 group-hover:scale-102 transition-transform duration-200">
-                    <span className="text-gray-400 font-black text-xs tracking-wider">[ IMAGE {maillot.club.toUpperCase()} ]</span>
+                  
+                  {/* ZONE DES IMAGES AVEC EFFET SURVOL (HOVER) SANS BUGS */}
+                  <div className="bg-[#f8f9fa] h-48 md:h-64 flex items-center justify-center border-b-2 border-gray-100 p-4 relative overflow-hidden">
+                    
+                    {/* Image de l'Avant (visible par défaut, masquée au survol) */}
+                    <img 
+                      src={maillot.imageFront} 
+                      alt={`${maillot.name} avant`} 
+                      className="h-full w-auto object-contain transition-opacity duration-300 group-hover:opacity-0 z-10 mix-blend-multiply" 
+                    />
+
+                    {/* Image de l'Arrière (masquée par défaut, apparaît au survol) */}
+                    <img 
+                      src={maillot.imageBack} 
+                      alt={`${maillot.name} arrière`} 
+                      className="absolute h-[calc(100%-2rem)] w-auto object-contain opacity-0 transition-opacity duration-300 group-hover:opacity-100 z-20 mix-blend-multiply" 
+                    />
                   </div>
+
                   <div className="p-3 flex flex-col flex-1 justify-between bg-white">
                     <div>
                       <p className="text-[10px] font-black text-red-600 uppercase tracking-wider" style={{ fontFamily: '"Arial Black", sans-serif' }}>{maillot.league}</p>
