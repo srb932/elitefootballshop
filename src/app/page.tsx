@@ -1,34 +1,259 @@
-import { motion } from "framer-motion"
+"use client"
 
-export function HeroSection() {
+import { useState } from "react"
+
+const MOCK_MAILLOTS = [
+  { id: "1", name: "MAILLOT PSG DOMICILE 2026", price: 45.00, oldPrice: 90.00, league: "Ligue 1", club: "PSG", badge: "NOUVEAU" },
+  { id: "2", name: "MAILLOT MARSEILLE DOMICILE 2026", price: 45.00, oldPrice: 85.00, league: "Ligue 1", club: "OM", badge: "" },
+  { id: "3", name: "MAILLOT LYON DOMICILE 2026", price: 45.00, oldPrice: 85.00, league: "Ligue 1", club: "OL", badge: "" },
+  { id: "4", name: "MAILLOT MONACO EXTÉRIEUR 2026", price: 45.00, oldPrice: 90.00, league: "Ligue 1", club: "Monaco", badge: "PROMO" },
+  { id: "6", name: "MAILLOT REAL MADRID DOMICILE 2026", price: 45.00, oldPrice: 90.00, league: "LaLiga", club: "Real Madrid", badge: "POPULAIRE" },
+  { id: "7", name: "MAILLOT FC BARCELONE DOMICILE 2026", price: 45.00, oldPrice: 90.00, league: "LaLiga", club: "FC Barcelone", badge: "PROMO" },
+  { id: "9", name: "MAILLOT ARSENAL DOMICILE 2026", price: 45.00, oldPrice: 90.00, league: "Premier League", club: "Arsenal", badge: "" },
+  { id: "10", name: "MAILLOT MANCHESTER CITY DOMICILE 2026", price: 45.00, oldPrice: 95.00, league: "Premier League", club: "Man City", badge: "POPULAIRE" },
+  { id: "13", name: "MAILLOT BAYERN MUNICH DOMICILE 2026", price: 45.00, oldPrice: 90.00, league: "Bundesliga", club: "Bayern Munich", badge: "" },
+  { id: "15", name: "MAILLOT INTER MILAN DOMICILE 2026", price: 45.00, oldPrice: 90.00, league: "Serie A", club: "Inter Milan", badge: "" },
+]
+
+export default function CatalogPage() {
+  const [selectedLeague, setSelectedLeague] = useState("Tous")
+  const [cart, setCart] = useState<{ id: string; name: string; price: number }[]>([])
+  
+  // États pour la navigation et les notifications
+  const [view, setView] = useState<"catalog" | "cart">("catalog")
+  const [notification, setNotification] = useState<string | null>(null)
+  
+  // États pour le formulaire de commande
+  const [promoCode, setPromoCode] = useState("")
+  const [discount, setDiscount] = useState(0)
+
+  // Fonction pour ajouter au panier avec notification discrète
+  const addToCart = (maillot: { id: string; name: string; price: number }) => {
+    setCart((prevCart) => [...prevCart, maillot])
+    setNotification(`⚡ ${maillot.name} AJOUTÉ !`)
+    setTimeout(() => setNotification(null), 3000) // Disparait après 3 secondes
+  };
+
+  const applyPromo = () => {
+    if (promoCode.toUpperCase() === "FOOT2026") {
+      setDiscount(10) // 10€ de réduction
+    } else {
+      setDiscount(0)
+    }
+  };
+
+  const filteredProducts = MOCK_MAILLOTS.filter((product) => {
+    return selectedLeague === "Tous" || product.league === selectedLeague
+  })
+
+  const totalPure = cart.reduce((sum, item) => sum + item.price, 0)
+  const totalFinal = Math.max(0, totalPure - discount)
+
   return (
-    <section className="relative h-screen bg-elite-dark overflow-hidden">
-      <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/80" />
+    <div className="min-h-screen bg-[#f4f6f9] antialiased text-gray-900" style={{ fontFamily: 'Arial, Helvetica, sans-serif' }}>
+      
+      {/* BANDEAU FLASH INFO */}
+      <div className="bg-black text-white text-xs font-black py-2.5 text-center uppercase tracking-widest px-4 border-b border-gray-800" style={{ fontFamily: '"Arial Black", Impact, sans-serif' }}>
+        ⚡ LIVRAISON GRATUITE DÈS 2 MAILLOTS ACHETÉS — CODE: FOOT2026 ⚡
+      </div>
 
-      <motion.div
-        className="relative z-10 flex flex-col items-center justify-center h-full text-white"
-        initial={{ opacity: 0, y: 40 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8, ease: "easeOut" }}
-      >
-        <h1 className="font-display text-7xl md:text-9xl tracking-wider">
-          ELITE
-        </h1>
+      {/* --- EN-TÊTE PRINCIPALE --- */}
+      <header className="bg-white border-b-2 border-gray-200 sticky top-0 z-50 shadow-sm">
+        <div className="max-w-7xl mx-auto px-4 h-20 flex items-center justify-between">
+          
+          {/* Logo cliquable pour revenir aux maillots */}
+          <div className="flex flex-col cursor-pointer" onClick={() => setView("catalog")}>
+            <span className="text-2xl md:text-3xl font-black tracking-wide text-blue-950 uppercase italic leading-none" style={{ fontFamily: 'Impact, "Arial Black", sans-serif' }}>
+              L'ÂME DU MAILLOT
+            </span>
+            <span className="text-[10px] text-red-600 font-extrabold tracking-widest uppercase mt-1">
+              • LE REPAIRE DU SUPPORTER •
+            </span>
+          </div>
 
-        <p className="text-gold-400 text-xl tracking-widest mt-2">
-          FOOTBALL SHOP
-        </p>
-
-        <div className="flex gap-4 mt-8">
-          <button className="bg-white text-black px-8 py-3 font-medium hover:bg-gold-400 transition-colors">
-            Explorer
-          </button>
+          {/* Bouton Panier qui change la vue sans message d'erreur */}
+          <div 
+            className={`p-2.5 rounded-full relative cursor-pointer transition border-2 ${view === "cart" ? "bg-blue-950 text-white border-blue-950" : "bg-gray-100 hover:bg-gray-200 border-transparent"}`}
+            onClick={() => setView("cart")}
+          >
+            🛒 <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-black w-4 h-4 flex items-center justify-center rounded-full" style={{ fontFamily: '"Arial Black", sans-serif' }}>
+              {cart.length}
+            </span>
+          </div>
         </div>
-      </motion.div>
-    </section>
-  )
-}
+      </header>
 
-export default function Page() {
-  return <HeroSection />
+      {/* --- VUE 1 : LE CATALOGUE DES MAILLOTS --- */}
+      {view === "catalog" && (
+        <>
+          <div className="max-w-7xl mx-auto px-4 mt-6">
+            <div className="bg-white p-4 rounded border-2 border-gray-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div className="flex items-center gap-3">
+                <label className="text-xs font-black uppercase tracking-wider text-gray-700" style={{ fontFamily: '"Arial Black", sans-serif' }}>
+                  Choisir un championnat :
+                </label>
+                <select
+                  value={selectedLeague}
+                  onChange={(e) => setSelectedLeague(e.target.value)}
+                  className="bg-[#f4f6f9] border-2 border-gray-300 rounded px-3 py-2 text-xs font-black uppercase tracking-wider text-gray-800 focus:outline-none focus:border-blue-950 cursor-pointer"
+                  style={{ fontFamily: '"Arial Black", Impact, sans-serif' }}
+                >
+                  <option value="Tous">🌍 Tous les championnats</option>
+                  <option value="Ligue 1">🇫🇷 Ligue 1</option>
+                  <option value="LaLiga">🇪🇸 LaLiga</option>
+                  <option value="Premier League">🏴󠁧󠁢󠁥󠁮󠁧󠁿 Premier League</option>
+                  <option value="Bundesliga">🇩🇪 Bundesliga</option>
+                  <option value="Serie A">🇮🇹 Serie A</option>
+                </select>
+              </div>
+              <div className="text-xs text-gray-500 font-black tracking-wide uppercase" style={{ fontFamily: '"Arial Black", sans-serif' }}>
+                {filteredProducts.length} ARTICLES DISPONIBLES
+              </div>
+            </div>
+          </div>
+
+          <main className="max-w-7xl mx-auto px-4 py-6">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+              {filteredProducts.map((maillot) => (
+                <div key={maillot.id} className="bg-white border-2 border-gray-200 rounded overflow-hidden hover:shadow-xl hover:border-blue-950 transition-all flex flex-col group relative">
+                  {maillot.badge && (
+                    <span className={`absolute top-2 left-2 z-10 text-[10px] font-black uppercase text-white px-2 py-1 rounded ${maillot.badge === "PROMO" ? "bg-red-600" : "bg-green-600"}`} style={{ fontFamily: '"Arial Black", sans-serif' }}>{maillot.badge}</span>
+                  )}
+                  <div className="bg-[#f8f9fa] h-48 md:h-64 flex items-center justify-center border-b-2 border-gray-100 group-hover:scale-102 transition-transform duration-200">
+                    <span className="text-gray-400 font-black text-xs tracking-wider">[ IMAGE {maillot.club.toUpperCase()} ]</span>
+                  </div>
+                  <div className="p-3 flex flex-col flex-1 justify-between bg-white">
+                    <div>
+                      <p className="text-[10px] font-black text-red-600 uppercase tracking-wider" style={{ fontFamily: '"Arial Black", sans-serif' }}>{maillot.league}</p>
+                      <h3 className="text-sm font-bold text-gray-800 line-clamp-2 mt-1 leading-snug group-hover:text-blue-950 transition-colors">{maillot.name}</h3>
+                    </div>
+                    <div className="mt-4">
+                      <div className="flex items-baseline gap-2 mb-2" style={{ fontFamily: '"Arial Black", Impact, sans-serif' }}>
+                        <span className="text-xl font-black text-red-600 tracking-wide">{maillot.price.toFixed(2)} €</span>
+                        <span className="text-xs text-gray-400 line-through font-normal tracking-wide">{maillot.oldPrice.toFixed(2)} €</span>
+                      </div>
+                      <button onClick={() => addToCart(maillot)} className="w-full bg-blue-950 hover:bg-red-600 text-white text-xs font-black uppercase py-3 rounded transition-colors tracking-widest shadow-sm" style={{ fontFamily: '"Arial Black", Impact, sans-serif' }}>
+                        AJOUTER AU PANIER
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </main>
+        </>
+      )}
+
+      {/* --- VUE 2 : LA PAGE DE CHECKOUT DU PANIER --- */}
+      {view === "cart" && (
+        <main className="max-w-4xl mx-auto px-4 py-8">
+          <button onClick={() => setView("catalog")} className="mb-6 text-xs font-black uppercase text-blue-950 hover:text-red-600 tracking-wider" style={{ fontFamily: '"Arial Black", sans-serif' }}>
+            ← Continuer mes achats
+          </button>
+          
+          <h2 className="text-2xl font-black italic uppercase tracking-wide border-b-2 border-gray-300 pb-2 mb-6" style={{ fontFamily: 'Impact, "Arial Black", sans-serif' }}>
+            VOTRE PANIER & COMMANDE
+          </h2>
+
+          {cart.length === 0 ? (
+            <div className="bg-white border-2 border-gray-200 p-8 text-center font-bold text-gray-500 rounded">
+              Votre panier est vide pour le moment.
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              
+              {/* COLONNE DE GAUCHE : RECAP ET CODE PROMO */}
+              <div className="space-y-6">
+                <div className="bg-white border-2 border-gray-200 p-4 rounded">
+                  <h3 className="text-sm font-black uppercase tracking-wider text-gray-800 mb-3 border-b pb-1" style={{ fontFamily: '"Arial Black", sans-serif' }}>Articles</h3>
+                  <div className="space-y-2 max-h-60 overflow-y-auto">
+                    {cart.map((item, index) => (
+                      <div key={index} className="flex justify-between items-center bg-gray-50 p-2 border rounded text-xs font-bold">
+                        <span>{item.name}</span>
+                        <span className="text-red-600">{item.price.toFixed(2)} €</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* BLOC CODE PROMO */}
+                <div className="bg-white border-2 border-gray-200 p-4 rounded">
+                  <h3 className="text-sm font-black uppercase tracking-wider text-gray-800 mb-2" style={{ fontFamily: '"Arial Black", sans-serif' }}>Code Promo</h3>
+                  <div className="flex gap-2">
+                    <input 
+                      type="text" 
+                      placeholder="Ex: FOOT2026" 
+                      value={promoCode} 
+                      onChange={(e) => setPromoCode(e.target.value)}
+                      className="border-2 border-gray-300 rounded px-3 py-2 text-xs font-bold uppercase w-full bg-gray-50 focus:outline-none focus:border-blue-950"
+                    />
+                    <button onClick={applyPromo} className="bg-black text-white text-xs font-black uppercase px-4 py-2 rounded" style={{ fontFamily: '"Arial Black", sans-serif' }}>Appliquer</button>
+                  </div>
+                  {discount > 0 && <p className="text-green-600 text-[11px] font-bold mt-1">✓ Réduction de {discount}€ appliquée !</p>}
+                </div>
+
+                {/* TOTAL */}
+                <div className="bg-blue-950 text-white p-4 rounded flex justify-between items-center font-black" style={{ fontFamily: '"Arial Black", Impact, sans-serif' }}>
+                  <span className="tracking-wide">TOTAL À PAYER :</span>
+                  <span className="text-xl tracking-wide text-red-500">{totalFinal.toFixed(2)} €</span>
+                </div>
+              </div>
+
+              {/* COLONNE DE DROITE : FORMULAIRE DE LIVRAISON & PAIEMENT */}
+              <div className="bg-white border-2 border-gray-200 p-4 rounded space-y-4">
+                <h3 className="text-sm font-black uppercase tracking-wider text-gray-800 border-b pb-1" style={{ fontFamily: '"Arial Black", sans-serif' }}>Informations de livraison</h3>
+                
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="text-[10px] font-black uppercase text-gray-500 block mb-1">Nom</label>
+                    <input type="text" required className="w-full border-2 border-gray-300 rounded px-2.5 py-2 text-xs font-bold focus:outline-none focus:border-blue-950 bg-gray-50" />
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-black uppercase text-gray-500 block mb-1">Prénom</label>
+                    <input type="text" required className="w-full border-2 border-gray-300 rounded px-2.5 py-2 text-xs font-bold focus:outline-none focus:border-blue-950 bg-gray-50" />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="text-[10px] font-black uppercase text-gray-500 block mb-1">Adresse Complète</label>
+                  <input type="text" required placeholder="N°, rue, appartement..." className="w-full border-2 border-gray-300 rounded px-2.5 py-2 text-xs font-bold focus:outline-none focus:border-blue-950 bg-gray-50" />
+                </div>
+
+                <div>
+                  <label className="text-[10px] font-black uppercase text-gray-500 block mb-1">Moyen de paiement</label>
+                  <select className="w-full bg-gray-50 border-2 border-gray-300 rounded px-2.5 py-2 text-xs font-black uppercase tracking-wider text-gray-800 focus:outline-none focus:border-blue-950 cursor-pointer" style={{ fontFamily: '"Arial Black", sans-serif' }}>
+                    <option value="cb">💳 Carte Bancaire (Visa, Mastercard)</option>
+                    <option value="paypal">🅿️ PayPal</option>
+                    <option value="apple">🍏 Apple Pay</option>
+                  </select>
+                </div>
+
+                <button onClick={() => alert("Commande simulée avec succès !")} className="w-full bg-red-600 hover:bg-red-700 text-white text-xs font-black uppercase py-3.5 rounded transition-colors tracking-widest shadow-md mt-2" style={{ fontFamily: '"Arial Black", Impact, sans-serif' }}>
+                  VALIDER ET PAYER {totalFinal.toFixed(2)} €
+                </button>
+              </div>
+
+            </div>
+          )}
+        </main>
+      )}
+
+      {/* --- NOTIFICATION DISCRÈTE EN BAS À DROITE --- */}
+      {notification && (
+        <div className="fixed bottom-5 right-5 z-50 bg-black text-white px-5 py-3 rounded border border-gray-800 shadow-2xl animate-bounce text-xs font-black tracking-widest uppercase" style={{ fontFamily: '"Arial Black", Impact, sans-serif' }}>
+          {notification}
+        </div>
+      )}
+
+      {/* PIED DE PAGE */}
+      <footer className="bg-white border-t-2 border-gray-200 mt-12 py-6 text-center text-xs text-gray-600 font-bold uppercase tracking-wider" style={{ fontFamily: '"Arial Black", sans-serif' }}>
+        <div className="max-w-7xl mx-auto px-4 grid grid-cols-3 gap-2">
+          <div>🔒 PAIEMENT 100% SÉCURISÉ</div>
+          <div>✈️ LIVRAISON SUIVIE</div>
+          <div>💬 SUPPORT CLIENT 7J/7</div>
+        </div>
+      </footer>
+
+    </div>
+  )
 }
