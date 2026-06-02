@@ -1,30 +1,9 @@
 "use client"
 
 import { useState } from "react"
-
-// Configuration de tous tes maillots avec l'avant (.png) et l'arrière (1.png)
-const MOCK_MAILLOTS = [
-  // --- LIGUE 1 ---
-  { id: "1", name: "MAILLOT PSG DOMICILE 2026", price: 45.00, oldPrice: 90.00, league: "Ligue 1", club: "PSG", badge: "NOUVEAU", imageFront: "/maillots/psg.png", imageBack: "/maillots/psg1.png" },
-  { id: "2", name: "MAILLOT MARSEILLE DOMICILE 2026", price: 45.00, oldPrice: 85.00, league: "Ligue 1", club: "OM", badge: "", imageFront: "/maillots/om.png", imageBack: "/maillots/om1.png" },
-  { id: "3", name: "MAILLOT LYON DOMICILE 2026", price: 45.00, oldPrice: 85.00, league: "Ligue 1", club: "OL", badge: "", imageFront: "/maillots/ol.png", imageBack: "/maillots/ol1.png" },
-  { id: "4", name: "MAILLOT MONACO EXTÉRIEUR 2026", price: 45.00, oldPrice: 90.00, league: "Ligue 1", club: "Monaco", badge: "PROMO", imageFront: "/maillots/monaco.png", imageBack: "/maillots/monaco1.png" },
-
-  // --- LALIGA ---
-  { id: "6", name: "MAILLOT REAL MADRID DOMICILE 2026", price: 45.00, oldPrice: 90.00, league: "LaLiga", club: "Real Madrid", badge: "POPULAIRE", imageFront: "/maillots/real-madrid.png", imageBack: "/maillots/real-madrid1.png" },
-  { id: "7", name: "MAILLOT FC BARCELONE DOMICILE 2026", price: 45.00, oldPrice: 90.00, league: "LaLiga", club: "FC Barcelone", badge: "PROMO", imageFront: "/maillots/barca.png", imageBack: "/maillots/barca1.png" },
-
-  // --- PREMIER LEAGUE ---
-  { id: "9", name: "MAILLOT ARSENAL DOMICILE 2026", price: 45.00, oldPrice: 90.00, league: "Premier League", club: "Arsenal", badge: "", imageFront: "/maillots/arsenal.png", imageBack: "/maillots/arsenal1.png" },
-  { id: "10", name: "MAILLOT MANCHESTER CITY DOMICILE 2026", price: 45.00, oldPrice: 95.00, league: "Premier League", club: "Man City", badge: "POPULAIRE", imageFront: "/maillots/man-city.png", imageBack: "/maillots/man-city1.png" },
-
-  // --- BUNDESLIGA ---
-  { id: "13", name: "MAILLOT BAYERN MUNICH DOMICILE 2026", price: 45.00, oldPrice: 90.00, league: "Bundesliga", club: "Bayern Munich", badge: "", imageFront: "/maillots/bayern.png", imageBack: "/maillots/bayern1.png" },
-
-  // --- SERIE A ---
-  { id: "15", name: "MAILLOT INTER MILAN DOMICILE 2026", price: 45.00, oldPrice: 90.00, league: "Serie A", club: "Inter Milan", badge: "", imageFront: "/maillots/inter.png", imageBack: "/maillots/inter1.png" },
-]
-
+import { ProductCard } from "../components/cards/ProductCard" 
+import { useCartStore } from "../store/cartStore"
+import { MOCK_MAILLOTS } from "../lib/products"
 export default function CatalogPage() {
   const [selectedLeague, setSelectedLeague] = useState("Tous")
   const [cart, setCart] = useState<{ id: string; name: string; price: number }[]>([])
