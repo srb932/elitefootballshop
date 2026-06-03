@@ -4,6 +4,7 @@ import { useState } from "react"
 import { ProductCard } from "../components/cards/ProductCard" 
 import { useCartStore } from "../store/cartStore"
 import { MOCK_MAILLOTS } from "../lib/products"
+
 export default function CatalogPage() {
   const [selectedLeague, setSelectedLeague] = useState("Tous")
   const [cart, setCart] = useState<{ id: string; name: string; price: number }[]>([])
@@ -85,7 +86,7 @@ export default function CatalogPage() {
                   <option value="Tous">🌍 Tous les championnats</option>
                   <option value="Ligue 1">🇫🇷 Ligue 1</option>
                   <option value="LaLiga">🇪🇸 LaLiga</option>
-                  <option value="Premier League">🏴󠁧󠁢󠁥󠁮󠁧󠁿 Premier League</option>
+                  <option value="Premier League">🏴%C3%A2%E2%82%AC%C5%93%C3%A2%E2%82%AC%C5%93%C3%A2%E2%82%AC%C2%A0 Premier League</option>
                   <option value="Bundesliga">🇩🇪 Bundesliga</option>
                   <option value="Serie A">🇮🇹 Serie A</option>
                 </select>
