@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 480" fill="none">
+  <rect width="400" height="480" fill="#f4f6f9"/>
+  <path d="M120 80 L200 40 L280 80 L300 120 L280 420 L120 420 L100 120 Z" fill="#e2e8f0" stroke="#94a3b8" stroke-width="3"/>
+  <text x="200" y="260" text-anchor="middle" font-family="Arial,sans-serif" font-size="18" font-weight="bold" fill="#64748b">AVANT</text>
+</svg>

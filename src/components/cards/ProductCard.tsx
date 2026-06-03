@@ -2,9 +2,12 @@
 
 import { motion } from "framer-motion"
 import Image from "next/image"
+import Link from "next/link"
+import type { Maillot } from "@/types/product"
 
-export function ProductCard({ product }: { product: any }) {
+export function ProductCard({ product }: { product: Maillot }) {
   return (
+    <Link href={`/product/${product.id}`}>
     <motion.div
       className="group relative bg-white border border-gray-200 rounded-lg overflow-hidden cursor-pointer shadow-sm"
       whileHover={{ y: -4 }}
@@ -43,12 +46,13 @@ export function ProductCard({ product }: { product: any }) {
           {product.name}
         </h3>
         <div className="flex items-baseline gap-2 mt-2">
-          <p className="text-red-600 font-black text-lg">{product.price.toFixed(2)} €</p>
+          <p className="text-gray-900 font-black text-lg">{product.price.toFixed(2)} €</p>
           {product.oldPrice && (
             <p className="text-gray-400 text-xs line-through">{product.oldPrice.toFixed(2)} €</p>
           )}
         </div>
       </div>
     </motion.div>
+    </Link>
   )
 }

@@ -3,8 +3,18 @@
 import { useState } from "react"
 import { motion } from "framer-motion"
 
-export function SearchBar({ onSearch }: { onSearch?: (q: string) => void }) {
-  const [query, setQuery] = useState("")
+export function SearchBar({
+  onSearch,
+  value,
+  onChange,
+}: {
+  onSearch?: (q: string) => void
+  value?: string
+  onChange?: (q: string) => void
+}) {
+  const [internalQuery, setInternalQuery] = useState("")
+  const query = value ?? internalQuery
+  const setQuery = onChange ?? setInternalQuery
   const [focused, setFocused] = useState(false)
 
   const handleSubmit = (e: React.FormEvent) => {
