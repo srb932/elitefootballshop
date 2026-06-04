@@ -4,31 +4,33 @@ import { useState } from "react"
 import Link from "next/link"
 import { signIn } from "next-auth/react"
 
-export default function LoginPage() {
+export default function RegisterPage() {
+  const [name, setName] = useState("")
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
     setError(null)
 
-    const result = await signIn("credentials", {
-      email,
-      password,
-      redirect: false,
+    const res = await fetch("/api/auth/register", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name, email, password }),
     })
 
+    const data = await res.json()
     setLoading(false)
 
-    if (result?.error) {
-      setError("Email ou mot de passe incorrect.")
+    if (!res.ok) {
+      setError(data.error || "Inscription impossible.")
       return
     }
 
-    window.location.href = "/"
+    await signIn("credentials", { email, password, callbackUrl: "/" })
   }
 
   return (
@@ -38,10 +40,19 @@ export default function LoginPage() {
           ← Retour à l&apos;accueil
         </Link>
 
-        <h1 className="text-2xl font-black uppercase text-gray-900 mt-4 mb-1">Connexion</h1>
-        <p className="text-sm text-gray-500 mb-6">Accédez à votre compte client</p>
+        <h1 className="text-2xl font-black uppercase text-gray-900 mt-4 mb-1">Inscription</h1>
+        <p className="text-sm text-gray-500 mb-6">Créez votre compte en quelques secondes</p>
 
-        <form onSubmit={handleLogin} className="space-y-4">
+        <form onSubmit={handleRegister} className="space-y-4">
+          <div>
+            <label className="text-xs font-bold uppercase text-gray-600 block mb-1">Prénom</label>
+            <input
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              className="w-full border border-gray-300 rounded-md px-3 py-2.5 text-sm focus:outline-none focus:border-blue-950"
+            />
+          </div>
           <div>
             <label className="text-xs font-bold uppercase text-gray-600 block mb-1">Email</label>
             <input
@@ -71,7 +82,7 @@ export default function LoginPage() {
             disabled={loading}
             className="w-full bg-blue-950 hover:bg-gray-900 disabled:opacity-60 text-white text-sm font-bold uppercase py-3 rounded-md"
           >
-            {loading ? "Connexion..." : "Se connecter"}
+            {loading ? "Création..." : "Créer mon compte"}
           </button>
         </form>
 
@@ -86,13 +97,13 @@ export default function LoginPage() {
           onClick={() => signIn("google", { callbackUrl: "/" })}
           className="w-full border border-gray-300 text-gray-800 text-sm font-semibold py-3 rounded-md hover:border-gray-400"
         >
-          Continuer avec Google
+          S&apos;inscrire avec Google
         </button>
 
         <p className="mt-6 text-center text-sm text-gray-600">
-          Vous n&apos;avez pas encore de compte ?{" "}
-          <Link href="/auth/register" className="font-bold text-blue-950 hover:underline">
-            S&apos;inscrire
+          Déjà un compte ?{" "}
+          <Link href="/auth/login" className="font-bold text-blue-950 hover:underline">
+            Se connecter
           </Link>
         </p>
       </div>

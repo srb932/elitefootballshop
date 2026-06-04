@@ -110,4 +110,4 @@ export const CLUBS_BY_LEAGUE: Record<string, string[]> = {
   ],
 }
 
-export const LEAGUE_OPTIONS = ["Tous", ...Object.keys(CLUBS_BY_LEAGUE)] as const
+export const LEAGUE_OPTIONS = ["Accueil", ...Object.keys(CLUBS_BY_LEAGUE)] as const

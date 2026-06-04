@@ -1,5 +1,6 @@
 import "./globals.css"
 import { Inter, Bebas_Neue } from "next/font/google"
+import { SessionProvider } from "@/components/providers/SessionProvider"
 
 const inter = Inter({
   subsets: ["latin"],
@@ -19,7 +20,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="fr" className={`${inter.variable} ${bebasNeue.variable}`}>
-      <body>{children}</body>
+      <body>
+        <SessionProvider>{children}</SessionProvider>
+      </body>
     </html>
   )
 }
