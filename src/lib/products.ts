@@ -5,6 +5,7 @@
  */
 import { CLUBS_BY_LEAGUE } from "./clubs"
 import type { Maillot, ProductSection } from "@/types/product"
+import { PRODUCT_OLD_PRICE, PRODUCT_PRICE } from "@/types/product"
 
 /** Tous les clubs du site — 98 équipes */
 export const CLUB_IMAGES: Record<string, { imageFront: string; imageBack: string }> = {
@@ -454,8 +455,8 @@ function buildMaillot(league: string, club: string): Maillot {
   return {
     id,
     name: `Maillot ${club} Domicile 2026`,
-    price: section === "promo" ? 39 : 45,
-    oldPrice: 89.99,
+    price: PRODUCT_PRICE,
+    oldPrice: PRODUCT_OLD_PRICE,
     league,
     club,
     clubSlug,

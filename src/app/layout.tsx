@@ -20,7 +20,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="fr" className={`${inter.variable} ${bebasNeue.variable}`}>
-      <body>
+      <body className={`${inter.className} antialiased`}>
         <SessionProvider>{children}</SessionProvider>
       </body>
     </html>

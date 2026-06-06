@@ -14,16 +14,19 @@ export async function POST(req: Request) {
   )
 
   if (event.type === "checkout.session.completed") {
-    const session = event.data.object as any
+    const session = event.data.object as Stripe.Checkout.Session
+    const userId = session.metadata?.userId
 
-    await prisma.order.create({
-      data: {
-        userId: session.metadata.userId,
-        total: session.amount_total / 100,
-        status: "PAID",
-        stripeId: session.id,
-      },
-    })
+    if (userId && userId !== "guest") {
+      await prisma.order.create({
+        data: {
+          userId,
+          total: (session.amount_total ?? 0) / 100,
+          status: "PAID",
+          stripeId: session.id,
+        },
+      })
+    }
   }
 
   return Response.json({ received: true })
