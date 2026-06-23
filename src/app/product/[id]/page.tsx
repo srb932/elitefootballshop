@@ -11,7 +11,7 @@ export default async function ProductDetailPage({
   const { id } = await params
   const product = getProductById(id)
 
-  if (!product) {
+  if (!product || !product.available) {
     notFound()
   }
 

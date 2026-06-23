@@ -1,4 +1,5 @@
 export type ProductSection = "vedette" | "tendance" | "nouveau" | "promo"
+export type MaillotType = "domicile" | "exterieur" | "third"
 
 export const PRODUCT_PRICE = 29.99
 export const PRODUCT_OLD_PRICE = 35
@@ -11,10 +12,16 @@ export interface Maillot {
   league: string
   club: string
   clubSlug: string
+  type: MaillotType
+  typeLabel: string
+  saison: string
   badge: string
   section?: ProductSection
+  available: boolean
   imageFront: string
   imageBack: string
+  frontFile: string
+  backFile: string
 }
 
 export interface FlocageOptions {

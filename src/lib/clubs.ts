@@ -108,6 +108,26 @@ export const CLUBS_BY_LEAGUE: Record<string, string[]> = {
     "Venezia FC",
     "Como 1907",
   ],
+  Bundesliga: [
+    "Bayern Munich",
+    "Borussia Dortmund",
+    "Bayer Leverkusen",
+    "RB Leipzig",
+    "VfB Stuttgart",
+    "Eintracht Frankfurt",
+    "VfL Wolfsburg",
+    "SC Freiburg",
+    "TSG Hoffenheim",
+    "Borussia Mönchengladbach",
+    "Werder Bremen",
+    "1. FSV Mainz 05",
+    "FC Augsburg",
+    "1. FC Union Berlin",
+    "VfL Bochum",
+    "1. FC Heidenheim",
+    "FC St. Pauli",
+    "Holstein Kiel",
+  ],
 }
 
 export const LEAGUE_OPTIONS = ["Accueil", ...Object.keys(CLUBS_BY_LEAGUE)] as const

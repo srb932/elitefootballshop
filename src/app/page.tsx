@@ -1,6 +1,7 @@
 "use client"
 
 import { Suspense, useEffect, useState } from "react"
+import Link from "next/link"
 import { useRouter, useSearchParams } from "next/navigation"
 import { MOCK_MAILLOTS } from "../lib/products"
 import { searchProducts } from "../lib/search"
@@ -100,6 +101,12 @@ function CatalogContent() {
           </button>
 
           <div className="flex items-center gap-2">
+            <Link
+              href="/contact"
+              className="hidden sm:inline-flex px-3 py-2 text-xs font-medium text-gray-700 border border-gray-200 rounded-lg hover:border-blue-950 hover:text-blue-950 transition-colors"
+            >
+              Contact
+            </Link>
             <button
               type="button"
               onClick={() => setAuthOpen(true)}
@@ -145,7 +152,7 @@ function CatalogContent() {
             />
 
             {searchQuery.trim() ? (
-              <ProductGrid products={searchResults} returnUrl={catalogUrl} />
+              <ProductGrid products={searchResults} returnUrl={catalogUrl} showUnavailable={false} />
             ) : isHome ? (
               <HomeFeatured products={MOCK_MAILLOTS} returnUrl="/" />
             ) : clubSlug && clubName ? (
@@ -154,7 +161,11 @@ function CatalogContent() {
                   <ClubLogo slug={clubSlug} name={clubName} size={56} />
                   <div>
                     <h2 className="text-xl font-semibold text-gray-900">{clubName}</h2>
-                    <p className="text-sm text-gray-500">{clubProducts.length} maillot{clubProducts.length > 1 ? "s" : ""}</p>
+                    <p className="text-sm text-gray-500">
+                      {clubProducts.filter((p) => p.available).length} / {clubProducts.length} maillot
+                      {clubProducts.length > 1 ? "s" : ""} disponible
+                      {clubProducts.filter((p) => p.available).length !== 1 ? "s" : ""}
+                    </p>
                   </div>
                 </div>
                 <ProductGrid products={clubProducts} returnUrl={catalogUrl} />
@@ -190,11 +201,21 @@ function CatalogContent() {
 
       <AuthModal open={authOpen} onClose={() => setAuthOpen(false)} />
 
-      <footer className="bg-white border-t border-gray-100 mt-12 py-6 text-center text-xs text-gray-400">
-        <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 sm:grid-cols-3 gap-2">
-          <div>Paiement sécurisé Stripe</div>
-          <div>Livraison suivie</div>
-          <div>Support 7j/7</div>
+      <footer className="bg-white border-t border-gray-100 mt-12 py-8">
+        <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-gray-400">
+          <div className="flex flex-wrap justify-center gap-4">
+            <span>Paiement sécurisé Stripe</span>
+            <span>Livraison suivie</span>
+            <span>Support 7j/7</span>
+          </div>
+          <div className="flex gap-4">
+            <Link href="/contact" className="hover:text-blue-950 transition-colors">
+              Contact
+            </Link>
+            <Link href="/guide-maillots" className="hover:text-blue-950 transition-colors">
+              Guide images
+            </Link>
+          </div>
         </div>
       </footer>
     </div>

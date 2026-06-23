@@ -7,8 +7,8 @@ const SECTION_ORDER: ProductSection[] = ["vedette", "tendance", "nouveau", "prom
 export function HomeFeatured({ products, returnUrl = "/" }: { products: Maillot[]; returnUrl?: string }) {
   return (
     <div className="space-y-10">
-      {SECTION_ORDER.map((section) => {
-        const items = products.filter((p) => p.section === section)
+        {SECTION_ORDER.map((section) => {
+        const items = products.filter((p) => p.section === section && p.available)
         if (items.length === 0) return null
 
         return (

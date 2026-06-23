@@ -1,413 +1,12 @@
 /**
- * Chemins des images — place les fichiers dans public/maillots/
- * PSG : psg.png / psg1.png — OM : om.png / om1.png
- * Autres clubs : {slug}-avant.png / {slug}-arriere.png (voir CLUB_IMAGES)
+ * Catalogue maillots — voir aussi /guide-maillots pour les noms de fichiers images
+ * Dossier images : public/maillots/ | Logos : public/logos/
  */
 import { CLUBS_BY_LEAGUE } from "./clubs"
-import type { Maillot, ProductSection } from "@/types/product"
+import { MAILLOT_VARIANTS } from "./maillot-images"
+import { resolveMaillotImages } from "./resolve-maillot-images"
+import type { Maillot, MaillotType, ProductSection } from "@/types/product"
 import { PRODUCT_OLD_PRICE, PRODUCT_PRICE } from "@/types/product"
-
-/** Tous les clubs du site — 98 équipes */
-export const CLUB_IMAGES: Record<string, { imageFront: string; imageBack: string }> = {
-  // Ligue 1
-  "paris-saint-germain": {
-    imageFront: "/maillots/psg.png",
-    imageBack: "/maillots/psg1.png",
-  },
-  "olympique-marseille": {
-    imageFront: "/maillots/om.png",
-    imageBack: "/maillots/om1.png",
-  },
-  "as-monaco": {
-    imageFront: "/maillots/as-monaco-avant.png",
-    imageBack: "/maillots/as-monaco-arriere.png",
-  },
-  "olympique-lyonnais": {
-    imageFront: "/maillots/olympique-lyonnais-avant.png",
-    imageBack: "/maillots/olympique-lyonnais-arriere.png",
-  },
-  "lille-osc": {
-    imageFront: "/maillots/lille-osc-avant.png",
-    imageBack: "/maillots/lille-osc-arriere.png",
-  },
-  "ogc-nice": {
-    imageFront: "/maillots/ogc-nice-avant.png",
-    imageBack: "/maillots/ogc-nice-arriere.png",
-  },
-  "rc-lens": {
-    imageFront: "/maillots/rc-lens-avant.png",
-    imageBack: "/maillots/rc-lens-arriere.png",
-  },
-  "stade-rennais": {
-    imageFront: "/maillots/stade-rennais-avant.png",
-    imageBack: "/maillots/stade-rennais-arriere.png",
-  },
-  "rc-strasbourg": {
-    imageFront: "/maillots/rc-strasbourg-avant.png",
-    imageBack: "/maillots/rc-strasbourg-arriere.png",
-  },
-  "toulouse-fc": {
-    imageFront: "/maillots/toulouse-fc-avant.png",
-    imageBack: "/maillots/toulouse-fc-arriere.png",
-  },
-  "stade-brestois": {
-    imageFront: "/maillots/stade-brestois-avant.png",
-    imageBack: "/maillots/stade-brestois-arriere.png",
-  },
-  "fc-nantes": {
-    imageFront: "/maillots/fc-nantes-avant.png",
-    imageBack: "/maillots/fc-nantes-arriere.png",
-  },
-  "stade-de-reims": {
-    imageFront: "/maillots/stade-de-reims-avant.png",
-    imageBack: "/maillots/stade-de-reims-arriere.png",
-  },
-  "aj-auxerre": {
-    imageFront: "/maillots/aj-auxerre-avant.png",
-    imageBack: "/maillots/aj-auxerre-arriere.png",
-  },
-  "angers-sco": {
-    imageFront: "/maillots/angers-sco-avant.png",
-    imageBack: "/maillots/angers-sco-arriere.png",
-  },
-  "le-havre-ac": {
-    imageFront: "/maillots/le-havre-ac-avant.png",
-    imageBack: "/maillots/le-havre-ac-arriere.png",
-  },
-  "as-saint-etienne": {
-    imageFront: "/maillots/as-saint-etienne-avant.png",
-    imageBack: "/maillots/as-saint-etienne-arriere.png",
-  },
-  "montpellier-hsc": {
-    imageFront: "/maillots/montpellier-hsc-avant.png",
-    imageBack: "/maillots/montpellier-hsc-arriere.png",
-  },
-  // Ligue 2
-  "paris-fc": {
-    imageFront: "/maillots/paris-fc-avant.png",
-    imageBack: "/maillots/paris-fc-arriere.png",
-  },
-  "fc-lorient": {
-    imageFront: "/maillots/fc-lorient-avant.png",
-    imageBack: "/maillots/fc-lorient-arriere.png",
-  },
-  "fc-metz": {
-    imageFront: "/maillots/fc-metz-avant.png",
-    imageBack: "/maillots/fc-metz-arriere.png",
-  },
-  "estac-troyes": {
-    imageFront: "/maillots/estac-troyes-avant.png",
-    imageBack: "/maillots/estac-troyes-arriere.png",
-  },
-  "stade-lavallois": {
-    imageFront: "/maillots/stade-lavallois-avant.png",
-    imageBack: "/maillots/stade-lavallois-arriere.png",
-  },
-  "ac-ajaccio": {
-    imageFront: "/maillots/ac-ajaccio-avant.png",
-    imageBack: "/maillots/ac-ajaccio-arriere.png",
-  },
-  "pau-fc": {
-    imageFront: "/maillots/pau-fc-avant.png",
-    imageBack: "/maillots/pau-fc-arriere.png",
-  },
-  "rodez-af": {
-    imageFront: "/maillots/rodez-af-avant.png",
-    imageBack: "/maillots/rodez-af-arriere.png",
-  },
-  "amiens-sc": {
-    imageFront: "/maillots/amiens-sc-avant.png",
-    imageBack: "/maillots/amiens-sc-arriere.png",
-  },
-  "en-avant-guingamp": {
-    imageFront: "/maillots/en-avant-guingamp-avant.png",
-    imageBack: "/maillots/en-avant-guingamp-arriere.png",
-  },
-  "sc-bastia": {
-    imageFront: "/maillots/sc-bastia-avant.png",
-    imageBack: "/maillots/sc-bastia-arriere.png",
-  },
-  "usl-dunkerque": {
-    imageFront: "/maillots/usl-dunkerque-avant.png",
-    imageBack: "/maillots/usl-dunkerque-arriere.png",
-  },
-  "annecy-fc": {
-    imageFront: "/maillots/annecy-fc-avant.png",
-    imageBack: "/maillots/annecy-fc-arriere.png",
-  },
-  "red-star-fc": {
-    imageFront: "/maillots/red-star-fc-avant.png",
-    imageBack: "/maillots/red-star-fc-arriere.png",
-  },
-  "fc-martigues": {
-    imageFront: "/maillots/fc-martigues-avant.png",
-    imageBack: "/maillots/fc-martigues-arriere.png",
-  },
-  "clermont-foot": {
-    imageFront: "/maillots/clermont-foot-avant.png",
-    imageBack: "/maillots/clermont-foot-arriere.png",
-  },
-  "grenoble-foot-38": {
-    imageFront: "/maillots/grenoble-foot-38-avant.png",
-    imageBack: "/maillots/grenoble-foot-38-arriere.png",
-  },
-  "sm-caen": {
-    imageFront: "/maillots/sm-caen-avant.png",
-    imageBack: "/maillots/sm-caen-arriere.png",
-  },
-  "us-boulogne": {
-    imageFront: "/maillots/us-boulogne-avant.png",
-    imageBack: "/maillots/us-boulogne-arriere.png",
-  },
-  "valenciennes-fc": {
-    imageFront: "/maillots/valenciennes-fc-avant.png",
-    imageBack: "/maillots/valenciennes-fc-arriere.png",
-  },
-  // Premier League
-  "arsenal": {
-    imageFront: "/maillots/arsenal-avant.png",
-    imageBack: "/maillots/arsenal-arriere.png",
-  },
-  "aston-villa": {
-    imageFront: "/maillots/aston-villa-avant.png",
-    imageBack: "/maillots/aston-villa-arriere.png",
-  },
-  "afc-bournemouth": {
-    imageFront: "/maillots/afc-bournemouth-avant.png",
-    imageBack: "/maillots/afc-bournemouth-arriere.png",
-  },
-  "brentford-fc": {
-    imageFront: "/maillots/brentford-fc-avant.png",
-    imageBack: "/maillots/brentford-fc-arriere.png",
-  },
-  "brighton-hove-albion": {
-    imageFront: "/maillots/brighton-hove-albion-avant.png",
-    imageBack: "/maillots/brighton-hove-albion-arriere.png",
-  },
-  "chelsea-fc": {
-    imageFront: "/maillots/chelsea-fc-avant.png",
-    imageBack: "/maillots/chelsea-fc-arriere.png",
-  },
-  "crystal-palace": {
-    imageFront: "/maillots/crystal-palace-avant.png",
-    imageBack: "/maillots/crystal-palace-arriere.png",
-  },
-  "everton-fc": {
-    imageFront: "/maillots/everton-fc-avant.png",
-    imageBack: "/maillots/everton-fc-arriere.png",
-  },
-  "fulham-fc": {
-    imageFront: "/maillots/fulham-fc-avant.png",
-    imageBack: "/maillots/fulham-fc-arriere.png",
-  },
-  "ipswich-town": {
-    imageFront: "/maillots/ipswich-town-avant.png",
-    imageBack: "/maillots/ipswich-town-arriere.png",
-  },
-  "leicester-city": {
-    imageFront: "/maillots/leicester-city-avant.png",
-    imageBack: "/maillots/leicester-city-arriere.png",
-  },
-  "liverpool-fc": {
-    imageFront: "/maillots/liverpool-fc-avant.png",
-    imageBack: "/maillots/liverpool-fc-arriere.png",
-  },
-  "manchester-city": {
-    imageFront: "/maillots/manchester-city-avant.png",
-    imageBack: "/maillots/manchester-city-arriere.png",
-  },
-  "manchester-united": {
-    imageFront: "/maillots/manchester-united-avant.png",
-    imageBack: "/maillots/manchester-united-arriere.png",
-  },
-  "newcastle-united": {
-    imageFront: "/maillots/newcastle-united-avant.png",
-    imageBack: "/maillots/newcastle-united-arriere.png",
-  },
-  "nottingham-forest": {
-    imageFront: "/maillots/nottingham-forest-avant.png",
-    imageBack: "/maillots/nottingham-forest-arriere.png",
-  },
-  "southampton-fc": {
-    imageFront: "/maillots/southampton-fc-avant.png",
-    imageBack: "/maillots/southampton-fc-arriere.png",
-  },
-  "tottenham-hotspur": {
-    imageFront: "/maillots/tottenham-hotspur-avant.png",
-    imageBack: "/maillots/tottenham-hotspur-arriere.png",
-  },
-  "west-ham-united": {
-    imageFront: "/maillots/west-ham-united-avant.png",
-    imageBack: "/maillots/west-ham-united-arriere.png",
-  },
-  "wolverhampton-wanderers": {
-    imageFront: "/maillots/wolverhampton-wanderers-avant.png",
-    imageBack: "/maillots/wolverhampton-wanderers-arriere.png",
-  },
-  // La Liga
-  "real-madrid": {
-    imageFront: "/maillots/real-madrid-avant.png",
-    imageBack: "/maillots/real-madrid-arriere.png",
-  },
-  "fc-barcelona": {
-    imageFront: "/maillots/fc-barcelona-avant.png",
-    imageBack: "/maillots/fc-barcelona-arriere.png",
-  },
-  "atletico-madrid": {
-    imageFront: "/maillots/atletico-madrid-avant.png",
-    imageBack: "/maillots/atletico-madrid-arriere.png",
-  },
-  "sevilla-fc": {
-    imageFront: "/maillots/sevilla-fc-avant.png",
-    imageBack: "/maillots/sevilla-fc-arriere.png",
-  },
-  "real-sociedad": {
-    imageFront: "/maillots/real-sociedad-avant.png",
-    imageBack: "/maillots/real-sociedad-arriere.png",
-  },
-  "villarreal-cf": {
-    imageFront: "/maillots/villarreal-cf-avant.png",
-    imageBack: "/maillots/villarreal-cf-arriere.png",
-  },
-  "real-betis": {
-    imageFront: "/maillots/real-betis-avant.png",
-    imageBack: "/maillots/real-betis-arriere.png",
-  },
-  "valencia-cf": {
-    imageFront: "/maillots/valencia-cf-avant.png",
-    imageBack: "/maillots/valencia-cf-arriere.png",
-  },
-  "athletic-club": {
-    imageFront: "/maillots/athletic-club-avant.png",
-    imageBack: "/maillots/athletic-club-arriere.png",
-  },
-  "ca-osasuna": {
-    imageFront: "/maillots/ca-osasuna-avant.png",
-    imageBack: "/maillots/ca-osasuna-arriere.png",
-  },
-  "getafe-cf": {
-    imageFront: "/maillots/getafe-cf-avant.png",
-    imageBack: "/maillots/getafe-cf-arriere.png",
-  },
-  "girona-fc": {
-    imageFront: "/maillots/girona-fc-avant.png",
-    imageBack: "/maillots/girona-fc-arriere.png",
-  },
-  "rcd-mallorca": {
-    imageFront: "/maillots/rcd-mallorca-avant.png",
-    imageBack: "/maillots/rcd-mallorca-arriere.png",
-  },
-  "rayo-vallecano": {
-    imageFront: "/maillots/rayo-vallecano-avant.png",
-    imageBack: "/maillots/rayo-vallecano-arriere.png",
-  },
-  "rc-celta-de-vigo": {
-    imageFront: "/maillots/rc-celta-de-vigo-avant.png",
-    imageBack: "/maillots/rc-celta-de-vigo-arriere.png",
-  },
-  "ud-las-palmas": {
-    imageFront: "/maillots/ud-las-palmas-avant.png",
-    imageBack: "/maillots/ud-las-palmas-arriere.png",
-  },
-  "deportivo-alaves": {
-    imageFront: "/maillots/deportivo-alaves-avant.png",
-    imageBack: "/maillots/deportivo-alaves-arriere.png",
-  },
-  "real-valladolid": {
-    imageFront: "/maillots/real-valladolid-avant.png",
-    imageBack: "/maillots/real-valladolid-arriere.png",
-  },
-  "rcd-espanyol": {
-    imageFront: "/maillots/rcd-espanyol-avant.png",
-    imageBack: "/maillots/rcd-espanyol-arriere.png",
-  },
-  "cd-leganes": {
-    imageFront: "/maillots/cd-leganes-avant.png",
-    imageBack: "/maillots/cd-leganes-arriere.png",
-  },
-  // Serie A
-  "inter-milan": {
-    imageFront: "/maillots/inter-milan-avant.png",
-    imageBack: "/maillots/inter-milan-arriere.png",
-  },
-  "ac-milan": {
-    imageFront: "/maillots/ac-milan-avant.png",
-    imageBack: "/maillots/ac-milan-arriere.png",
-  },
-  "juventus-fc": {
-    imageFront: "/maillots/juventus-fc-avant.png",
-    imageBack: "/maillots/juventus-fc-arriere.png",
-  },
-  "ssc-napoli": {
-    imageFront: "/maillots/ssc-napoli-avant.png",
-    imageBack: "/maillots/ssc-napoli-arriere.png",
-  },
-  "as-roma": {
-    imageFront: "/maillots/as-roma-avant.png",
-    imageBack: "/maillots/as-roma-arriere.png",
-  },
-  "ss-lazio": {
-    imageFront: "/maillots/ss-lazio-avant.png",
-    imageBack: "/maillots/ss-lazio-arriere.png",
-  },
-  "atalanta-bc": {
-    imageFront: "/maillots/atalanta-bc-avant.png",
-    imageBack: "/maillots/atalanta-bc-arriere.png",
-  },
-  "acf-fiorentina": {
-    imageFront: "/maillots/acf-fiorentina-avant.png",
-    imageBack: "/maillots/acf-fiorentina-arriere.png",
-  },
-  "bologna-fc": {
-    imageFront: "/maillots/bologna-fc-avant.png",
-    imageBack: "/maillots/bologna-fc-arriere.png",
-  },
-  "torino-fc": {
-    imageFront: "/maillots/torino-fc-avant.png",
-    imageBack: "/maillots/torino-fc-arriere.png",
-  },
-  "ac-monza": {
-    imageFront: "/maillots/ac-monza-avant.png",
-    imageBack: "/maillots/ac-monza-arriere.png",
-  },
-  "genoa-cfc": {
-    imageFront: "/maillots/genoa-cfc-avant.png",
-    imageBack: "/maillots/genoa-cfc-arriere.png",
-  },
-  "udinese-calcio": {
-    imageFront: "/maillots/udinese-calcio-avant.png",
-    imageBack: "/maillots/udinese-calcio-arriere.png",
-  },
-  "hellas-verona": {
-    imageFront: "/maillots/hellas-verona-avant.png",
-    imageBack: "/maillots/hellas-verona-arriere.png",
-  },
-  "us-lecce": {
-    imageFront: "/maillots/us-lecce-avant.png",
-    imageBack: "/maillots/us-lecce-arriere.png",
-  },
-  "cagliari-calcio": {
-    imageFront: "/maillots/cagliari-calcio-avant.png",
-    imageBack: "/maillots/cagliari-calcio-arriere.png",
-  },
-  "empoli-fc": {
-    imageFront: "/maillots/empoli-fc-avant.png",
-    imageBack: "/maillots/empoli-fc-arriere.png",
-  },
-  "parma-calcio": {
-    imageFront: "/maillots/parma-calcio-avant.png",
-    imageBack: "/maillots/parma-calcio-arriere.png",
-  },
-  "venezia-fc": {
-    imageFront: "/maillots/venezia-fc-avant.png",
-    imageBack: "/maillots/venezia-fc-arriere.png",
-  },
-  "como-1907": {
-    imageFront: "/maillots/como-1907-avant.png",
-    imageBack: "/maillots/como-1907-arriere.png",
-  },
-
-}
 
 const SECTION_BY_CLUB: Record<string, ProductSection> = {
   "Paris Saint-Germain": "vedette",
@@ -419,6 +18,7 @@ const SECTION_BY_CLUB: Record<string, ProductSection> = {
   "Olympique Lyonnais": "promo",
   Arsenal: "promo",
   "Manchester City": "promo",
+  "Bayern Munich": "tendance",
 }
 
 export function slugify(text: string): string {
@@ -430,20 +30,19 @@ export function slugify(text: string): string {
     .replace(/(^-|-$)/g, "")
 }
 
-export function getClubImagePaths(clubSlug: string): { imageFront: string; imageBack: string } {
-  return (
-    CLUB_IMAGES[clubSlug] ?? {
-      imageFront: "/maillots/placeholder-front.svg",
-      imageBack: "/maillots/placeholder-back.svg",
-    }
-  )
-}
-
-function buildMaillot(league: string, club: string): Maillot {
+function buildMaillot(
+  league: string,
+  club: string,
+  type: MaillotType,
+  typeLabel: string,
+  saison: string,
+  code: string
+): Maillot {
   const clubSlug = slugify(club)
-  const images = getClubImagePaths(clubSlug)
-  const section = SECTION_BY_CLUB[club]
-  const id = `${slugify(league)}-${clubSlug}`
+  const images = resolveMaillotImages(clubSlug, type, code)
+  const isFeaturedHome = type === "domicile" && code === "2526"
+  const section = isFeaturedHome ? SECTION_BY_CLUB[club] : undefined
+  const id = `${slugify(league)}-${clubSlug}-${type}-${code}`
 
   const badgeMap: Record<ProductSection, string> = {
     vedette: "VEDETTE",
@@ -454,21 +53,32 @@ function buildMaillot(league: string, club: string): Maillot {
 
   return {
     id,
-    name: `Maillot ${club} Domicile 2026`,
+    name: `Maillot ${club} ${typeLabel} ${saison}`,
     price: PRODUCT_PRICE,
     oldPrice: PRODUCT_OLD_PRICE,
     league,
     club,
     clubSlug,
-    badge: section ? badgeMap[section] : "",
-    section,
+    type,
+    typeLabel,
+    saison,
+    badge: section && images.available ? badgeMap[section] : "",
+    section: images.available ? section : undefined,
+    available: images.available,
     imageFront: images.imageFront,
     imageBack: images.imageBack,
+    frontFile: images.frontFile,
+    backFile: images.backFile,
   }
 }
 
 export const MOCK_MAILLOTS: Maillot[] = Object.entries(CLUBS_BY_LEAGUE).flatMap(
-  ([league, clubs]) => clubs.map((club) => buildMaillot(league, club))
+  ([league, clubs]) =>
+    clubs.flatMap((club) =>
+      MAILLOT_VARIANTS.map((v) =>
+        buildMaillot(league, club, v.type, v.typeLabel, v.saison, v.code)
+      )
+    )
 )
 
 export function getProductById(id: string): Maillot | undefined {
@@ -476,5 +86,27 @@ export function getProductById(id: string): Maillot | undefined {
 }
 
 export function getProductsBySection(section: ProductSection): Maillot[] {
-  return MOCK_MAILLOTS.filter((p) => p.section === section)
+  return MOCK_MAILLOTS.filter((p) => p.section === section && p.available)
+}
+
+export function getImageGuideEntries(): {
+  club: string
+  clubSlug: string
+  league: string
+  type: string
+  saison: string
+  avant: string
+  arriere: string
+  available: boolean
+}[] {
+  return MOCK_MAILLOTS.map((p) => ({
+    club: p.club,
+    clubSlug: p.clubSlug,
+    league: p.league,
+    type: p.typeLabel,
+    saison: p.saison,
+    avant: p.frontFile,
+    arriere: p.backFile,
+    available: p.available,
+  }))
 }
