@@ -9,6 +9,7 @@ export function AuthModal({ open, onClose }: { open: boolean; onClose: () => voi
   const [password, setPassword] = useState("")
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [success, setSuccess] = useState<string | null>(null)
 
   if (!open) return null
 
@@ -16,6 +17,7 @@ export function AuthModal({ open, onClose }: { open: boolean; onClose: () => voi
     e.preventDefault()
     setLoading(true)
     setError(null)
+    setSuccess(null)
 
     const result = await signIn("credentials", {
       email,
@@ -30,11 +32,12 @@ export function AuthModal({ open, onClose }: { open: boolean; onClose: () => voi
       return
     }
 
-    onClose()
+    setSuccess("Connexion réussie ! Redirection...")
+    window.location.href = "/?auth=login"
   }
 
   const handleGoogle = () => {
-    signIn("google", { callbackUrl: "/" })
+    signIn("google", { callbackUrl: "/?auth=login" })
   }
 
   return (
@@ -76,10 +79,11 @@ export function AuthModal({ open, onClose }: { open: boolean; onClose: () => voi
           </div>
 
           {error && <p className="text-red-600 text-xs font-medium">{error}</p>}
+          {success && <p className="text-emerald-600 text-xs font-medium">{success}</p>}
 
           <button
             type="submit"
-            disabled={loading}
+            disabled={loading || !!success}
             className="w-full bg-blue-950 hover:bg-gray-900 disabled:opacity-60 text-white text-sm font-bold uppercase py-3 rounded-md transition-colors"
           >
             {loading ? "Connexion..." : "Se connecter"}
@@ -95,7 +99,8 @@ export function AuthModal({ open, onClose }: { open: boolean; onClose: () => voi
         <button
           type="button"
           onClick={handleGoogle}
-          className="w-full border border-gray-300 hover:border-gray-400 text-gray-800 text-sm font-semibold py-3 rounded-md flex items-center justify-center gap-2 transition-colors"
+          disabled={loading || !!success}
+          className="w-full border border-gray-300 hover:border-gray-400 disabled:opacity-60 text-gray-800 text-sm font-semibold py-3 rounded-md flex items-center justify-center gap-2 transition-colors"
         >
           <svg className="w-5 h-5" viewBox="0 0 24 24" aria-hidden>
             <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />

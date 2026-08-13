@@ -1,5 +1,6 @@
 import Link from "next/link"
 import { PromoBanner } from "@/components/catalog/PromoBanner"
+import { MissingMaillotsTable } from "@/components/guide/MissingMaillotsTable"
 import { getImageGuideEntries } from "@/lib/products"
 import { IMAGE_GUIDE } from "@/lib/maillot-images"
 
@@ -64,12 +65,11 @@ export default function GuideMaillotsPage() {
           </h2>
           <p className="text-xs text-gray-500 mb-4">Ces paires avant/arrière sont présentes dans le dossier.</p>
           <div className="max-h-64 overflow-y-auto text-xs font-mono space-y-1 text-green-700">
-            {present.slice(0, 50).map((e) => (
+            {present.map((e) => (
               <div key={`${e.clubSlug}-${e.type}-${e.saison}`}>
                 ✓ {e.avant} + {e.arriere}
               </div>
             ))}
-            {present.length > 50 && <p className="text-gray-400 pt-2">… et {present.length - 50} autres</p>}
           </div>
         </section>
 
@@ -81,33 +81,9 @@ export default function GuideMaillotsPage() {
             Renommez vos fichiers exactement comme ci-dessous et glissez-les dans{" "}
             <code className="bg-gray-100 px-1 rounded">public/maillots/</code>
           </p>
-          <div className="overflow-x-auto">
-            <table className="w-full text-xs">
-              <thead>
-                <tr className="border-b border-gray-200 text-left text-gray-500">
-                  <th className="py-2 pr-4">Club</th>
-                  <th className="py-2 pr-4">Type</th>
-                  <th className="py-2 pr-4">Saison</th>
-                  <th className="py-2 pr-4">Fichier avant</th>
-                  <th className="py-2">Fichier arrière</th>
-                </tr>
-              </thead>
-              <tbody>
-                {missing.slice(0, 100).map((e) => (
-                  <tr key={`${e.clubSlug}-${e.type}-${e.saison}`} className="border-b border-gray-50">
-                    <td className="py-2 pr-4 font-medium text-gray-800">{e.club}</td>
-                    <td className="py-2 pr-4 text-gray-600">{e.type}</td>
-                    <td className="py-2 pr-4 text-gray-600">{e.saison}</td>
-                    <td className="py-2 pr-4 font-mono text-gray-700">{e.avant}</td>
-                    <td className="py-2 font-mono text-gray-700">{e.arriere}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-            {missing.length > 100 && (
-              <p className="text-gray-400 text-xs mt-4">… {missing.length - 100} autres entrées</p>
-            )}
-          </div>
+
+          <MissingMaillotsTable entries={missing} />
+
           <p className="text-xs text-gray-500 mt-6">
             Après avoir ajouté des images, relancez :{" "}
             <code className="bg-gray-100 px-2 py-0.5 rounded">node scripts/generate-image-manifest.mjs</code>

@@ -11,10 +11,14 @@ model User {
   id        String   @id @default(cuid())
   name      String?
   email     String   @unique
+  emailVerified DateTime? // <-- Ajoute cette ligne obligatoire pour NextAuth
   password  String?
   image     String?
   role      Role     @default(USER)
   createdAt DateTime @default(now())
+
+  accounts Account[]
+  sessions Session[]
 
   orders    Order[]
   reviews   Review[]
@@ -26,11 +30,47 @@ enum Role {
   ADMIN
 }
 
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
 model League {
-  id    String  @id @default(cuid())
-  name  String  @unique
-  slug  String  @unique
-  logo  String?
+  id   String  @id @default(cuid())
+  name String  @unique
+  slug String  @unique
+  logo String?
 
   clubs Club[]
 }
@@ -42,7 +82,7 @@ model Club {
   logo     String?
   leagueId String
 
-  league   League  @relation(fields: [leagueId], references: [id])
+  league   League    @relation(fields: [leagueId], references: [id])
   products Product[]
 }
 
@@ -57,11 +97,11 @@ model Product {
   isNew       Boolean  @default(false)
   clubId      String
 
-  club       Club       @relation(fields: [clubId], references: [id])
+  club       Club        @relation(fields: [clubId], references: [id])
   reviews    Review[]
   orderItems OrderItem[]
   favorites  Favorite[]
-  createdAt  DateTime   @default(now())
+  createdAt  DateTime    @default(now())
 }
 
 model Order {
@@ -85,7 +125,7 @@ enum OrderStatus {
 }
 
 model OrderItem {
-  id        String  @id @default(cuid())
+  id        String @id @default(cuid())
   orderId   String
   productId String
   quantity  Int

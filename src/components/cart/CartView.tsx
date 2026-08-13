@@ -1,7 +1,8 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import Image from "next/image"
+import { useSession } from "next-auth/react"
 import { useCartStore, flocageKey, type CartItem } from "@/store/cartStore"
 import { EMPTY_SHIPPING, type ShippingInfo } from "@/types/product"
 
@@ -41,10 +42,21 @@ export function CartView({
   promoCode: string
   setPromoCode: (v: string) => void
 }) {
+  const { data: session } = useSession()
   const { items, removeItem, updateQty } = useCartStore()
   const [shipping, setShipping] = useState<ShippingInfo>(EMPTY_SHIPPING)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    if (!session?.user) return
+
+    setShipping((prev) => ({
+      ...prev,
+      email: prev.email || session.user?.email || "",
+      prenom: prev.prenom || session.user?.name || "",
+    }))
+  }, [session?.user])
 
   const subtotal = items.reduce((s, i) => s + i.price * i.quantity, 0)
   const total = Math.max(0, subtotal - discount)

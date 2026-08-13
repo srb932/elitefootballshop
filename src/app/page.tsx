@@ -3,6 +3,7 @@
 import { Suspense, useEffect, useState } from "react"
 import Link from "next/link"
 import { useRouter, useSearchParams } from "next/navigation"
+import { useSession } from "next-auth/react"
 import { MOCK_MAILLOTS } from "../lib/products"
 import { searchProducts } from "../lib/search"
 import {
@@ -19,13 +20,98 @@ import { HomeFeatured } from "../components/catalog/HomeFeatured"
 import { CatalogBreadcrumb } from "../components/catalog/CatalogBreadcrumb"
 import { PromoBanner } from "../components/catalog/PromoBanner"
 import { AuthModal } from "../components/auth/AuthModal"
+import { AuthNav } from "../components/auth/AuthNav"
 import { CartView } from "../components/cart/CartView"
 import { useCartStore } from "../store/cartStore"
 import { ClubLogo } from "../components/catalog/ClubLogo"
 
+// =========================================================================
+// COMPOSANT HERO IMMERSIF - VERSION ÉPURÉE (Plein Écran, Barre Cachée)
+// =========================================================================
+function HeroSection() {
+  const images = [
+    "/maillots/fond1.jpg",
+    "/maillots/fond2.jpg",
+    "/maillots/fond3.jpg"
+  ]
+
+  const [currentIndex, setCurrentIndex] = useState(0)
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentIndex((prevIndex) => (prevIndex + 1) % images.length)
+    }, 5000)
+    return () => clearInterval(timer)
+  }, [images.length])
+
+  return (
+    // h-[calc(100vh-64px)] prend toute la hauteur restante sous le header pour masquer la recherche
+    <div className="relative h-[calc(100vh-64px)] w-full overflow-hidden bg-zinc-950 mb-0">
+      {/* Diaporama d'arrière-plan animé */}
+      {images.map((src, index) => (
+        <div
+          key={src}
+          className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
+            index === currentIndex ? "opacity-50 scale-100" : "opacity-0 scale-105"
+          }`}
+          style={{ transitionProperty: "opacity, transform" }}
+        >
+          <img
+            src={src}
+            alt={`L'Âme du Maillot Fond ${index + 1}`}
+            className="h-full w-full object-cover object-center"
+            style={{ transform: index === currentIndex ? "scale(1.03)" : "scale(1)", transition: "transform 5000ms linear" }}
+          />
+        </div>
+      ))}
+
+      {/* Overlay dégradé sombre et élégant pour cacher le bas */}
+      <div className="absolute inset-0 bg-gradient-to-t from-[#f4f6f9] via-black/30 to-black/60" />
+
+      {/* Contenu textuel centré et épuré */}
+      <div className="relative z-10 flex h-full flex-col items-center justify-center px-4 text-center">
+        <h1 className="max-w-4xl text-4xl font-black tracking-tight text-white sm:text-6xl md:text-7xl uppercase italic leading-none">
+          PORTEZ <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-zinc-100">L&apos;ÂME</span> DE VOTRE CLUB
+        </h1>
+        
+        <p className="mt-4 max-w-xl text-sm md:text-base text-zinc-300 font-light tracking-wide">
+  Tous nos maillots en réduction pour fêter l&apos;ouverture officielle de la boutique.
+</p>
+
+        {/* Bouton d'action unique, sobre et professionnel */}
+        <div className="mt-8 w-full max-w-xs sm:max-w-none flex justify-center">
+          <button
+            type="button"
+            onClick={() => {
+              const el = document.getElementById("recherche-ancre");
+              if (el) el.scrollIntoView({ behavior: "smooth" });
+            }}
+            className="inline-flex items-center justify-center px-8 py-3.5 text-xs font-bold uppercase tracking-widest text-white bg-blue-950 rounded-lg hover:bg-black border border-blue-900/50 transition-all shadow-xl active:scale-95"
+          >
+            Découvrir les maillots
+          </button>
+        </div>
+
+        {/* Indicateurs discrets en bas */}
+        <div className="absolute bottom-6 flex gap-2">
+          {images.map((_, idx) => (
+            <div
+              key={idx}
+              className={`h-1 rounded-full transition-all duration-300 ${
+                idx === currentIndex ? "w-6 bg-white" : "w-1.5 bg-white/30"
+              }`}
+            />
+          ))}
+        </div>
+      </div>
+    </div>
+  )
+}
+
 function CatalogContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
+  const { data: session } = useSession()
   const { items: cart } = useCartStore()
 
   const { league, clubSlug } = parseCatalogState(searchParams)
@@ -35,11 +121,33 @@ function CatalogContent() {
     searchParams.get("cart") === "1" ? "cart" : "catalog"
   )
   const [notification, setNotification] = useState<string | null>(null)
+  const [authSuccessType, setAuthSuccessType] = useState<"login" | "register" | null>(null)
+  const [authBanner, setAuthBanner] = useState<string | null>(null)
   const [promoCode, setPromoCode] = useState("")
   const [discount, setDiscount] = useState(0)
 
   const catalogUrl = buildCatalogUrl({ league, clubSlug })
   const clubName = clubSlug && league !== "Accueil" ? getClubName(league, clubSlug) : undefined
+
+  useEffect(() => {
+    const authStatus = searchParams.get("auth")
+    if (authStatus === "login" || authStatus === "register") {
+      setAuthSuccessType(authStatus)
+      router.replace("/")
+    }
+  }, [searchParams, router])
+
+  useEffect(() => {
+    if (!authSuccessType) return
+    const label = authSuccessType === "login" ? "Connexion réussie" : "Inscription réussie"
+    setAuthBanner(`${label} ! Bienvenue${session?.user?.name ? `, ${session.user.name}` : ""}.`)
+  }, [authSuccessType, session?.user?.name])
+
+  useEffect(() => {
+    if (!authBanner) return
+    const timer = setTimeout(() => setAuthBanner(null), 5000)
+    return () => clearTimeout(timer)
+  }, [authBanner])
 
   useEffect(() => {
     if (searchParams.get("added") === "1") {
@@ -89,6 +197,12 @@ function CatalogContent() {
     <div className="min-h-screen bg-[#f4f6f9] antialiased text-gray-900 font-[family-name:var(--font-inter)]">
       <PromoBanner />
 
+      {authBanner && (
+        <div className="bg-blue-950 text-white text-xs py-2 px-4 text-center font-semibold tracking-wide uppercase">
+          {authBanner}
+        </div>
+      )}
+
       <header className="bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between gap-4">
           <button type="button" onClick={goHome} className="text-left shrink-0">
@@ -100,20 +214,16 @@ function CatalogContent() {
             </span>
           </button>
 
+          {/* Zone Contact / Connexion avec la police Inter, majuscules et espacement soigné */}
           <div className="flex items-center gap-2">
             <Link
               href="/contact"
-              className="hidden sm:inline-flex px-3 py-2 text-xs font-medium text-gray-700 border border-gray-200 rounded-lg hover:border-blue-950 hover:text-blue-950 transition-colors"
+              className="hidden sm:inline-flex px-4 py-2 text-xs font-semibold tracking-wider uppercase text-gray-700 border border-gray-200 rounded-lg hover:border-blue-950 hover:text-blue-950 hover:bg-gray-50 transition-all duration-200"
             >
               Contact
             </Link>
-            <button
-              type="button"
-              onClick={() => setAuthOpen(true)}
-              className="px-3 py-2 text-xs font-medium text-gray-700 border border-gray-200 rounded-lg hover:border-blue-950 hover:text-blue-950 transition-colors"
-            >
-              Connexion
-            </button>
+
+            <AuthNav onLoginClick={() => setAuthOpen(true)} />
 
             <button
               type="button"
@@ -138,7 +248,10 @@ function CatalogContent() {
 
       {view === "catalog" && (
         <>
-          <div className="max-w-7xl mx-auto px-4 mt-6 space-y-5">
+          {/* LE HERO S'AFFICHE UNIQUEMENT SUR L'ACCUEIL */}
+          {isHome && <HeroSection />}
+
+          <div id="recherche-ancre" className="max-w-7xl mx-auto px-4 mt-6 space-y-5">
             <SearchBar value={searchQuery} onChange={setSearchQuery} onSearch={setSearchQuery} />
             <LeagueNav selected={league} onSelect={(l) => navigate(l, null)} />
           </div>
@@ -154,7 +267,9 @@ function CatalogContent() {
             {searchQuery.trim() ? (
               <ProductGrid products={searchResults} returnUrl={catalogUrl} showUnavailable={false} />
             ) : isHome ? (
-              <HomeFeatured products={MOCK_MAILLOTS} returnUrl="/" />
+              <div id="vedettes-ancre">
+                <HomeFeatured products={MOCK_MAILLOTS} returnUrl="/" />
+              </div>
             ) : clubSlug && clubName ? (
               <div>
                 <div className="flex items-center gap-4 mb-6">

@@ -13,6 +13,13 @@ export async function POST(req: Request) {
       )
     }
 
+    if (!name || typeof name !== "string" || name.trim().length < 2) {
+      return NextResponse.json(
+        { error: "Nom d'utilisateur requis (2 caractères min.)." },
+        { status: 400 }
+      )
+    }
+
     const existing = await prisma.user.findUnique({ where: { email } })
     if (existing) {
       return NextResponse.json({ error: "Cet email est déjà utilisé." }, { status: 409 })
@@ -24,7 +31,7 @@ export async function POST(req: Request) {
       data: {
         email,
         password: hashed,
-        name: name || null,
+        name: name.trim(),
       },
     })
 
