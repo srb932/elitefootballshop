@@ -70,9 +70,13 @@ function HeroSection() {
 
       {/* Contenu textuel centré et épuré */}
       <div className="relative z-10 flex h-full flex-col items-center justify-center px-4 text-center">
-        <h1 className="max-w-4xl text-4xl font-black tracking-tight text-white sm:text-6xl md:text-7xl uppercase italic leading-none">
-          PORTEZ <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-zinc-100">L&apos;ÂME</span> DE VOTRE CLUB
-        </h1>
+        <h1 className="max-w-4xl text-4xl font-black tracking-tight text-white sm:text-6xl md:text-7xl uppercase italic leading-tight">
+  PORTEZ{" "}
+  <span className="inline-block px-3 py-1 -mx-3 -my-1 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-zinc-100 overflow-visible">
+    L&apos;ÂME
+  </span>{" "}
+  DE VOTRE CLUB
+</h1>
         
         <p className="mt-4 max-w-xl text-sm md:text-base text-zinc-300 font-light tracking-wide">
   Tous nos maillots en réduction pour fêter l&apos;ouverture officielle de la boutique.

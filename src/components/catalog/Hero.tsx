@@ -20,9 +20,13 @@ export default function Hero() {
           Collection Officielle 2026
         </span>
         
-        <h1 className="max-w-3xl text-4xl font-extrabold tracking-tight text-white sm:text-6xl md:text-7xl">
-          PORTEZ <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-200">L'ÂME</span> DE VOTRE CLUB
-        </h1>
+        <h1 className="max-w-3xl text-4xl font-extrabold tracking-tight text-white sm:text-6xl md:text-7xl leading-tight">
+  PORTEZ{" "}
+  <span className="inline-block px-3 py-1 -mx-3 -my-1 text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-200 overflow-visible">
+    L'ÂME
+  </span>{" "}
+  DE VOTRE CLUB
+</h1>
         
         <p className="mt-6 max-w-xl text-base text-zinc-300 sm:text-lg">
           Découvrez notre sélection de maillots premium. Conçus pour les passionnés, les collectionneurs et l'amour du beau jeu.
