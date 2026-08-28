@@ -1,0 +1,2 @@
+import { auth } from "@/auth"; import { prisma } from "@/lib/prisma"
+export async function POST(request: Request) { const session = await auth(); const body = await request.json().catch(() => ({})); if (session?.user?.id) await prisma.user.update({ where: { id: session.user.id }, data: { lastSeen: new Date(), lastPath: typeof body.path === "string" ? body.path.slice(0, 500) : null } }); return Response.json({ ok: true }) }

@@ -48,13 +48,16 @@ export function ProductDetail({ product }: { product: Maillot }) {
   }
 
   return (
-    <div className="min-h-screen bg-[#f4f6f9] antialiased text-gray-900 font-[family-name:var(--font-inter)]">
+    <div className="min-h-screen bg-[#edf4ff] antialiased text-gray-900 font-[family-name:var(--font-inter)]">
       <PromoBanner />
 
       <header className="bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 h-14 flex items-center">
+        <div className="max-w-7xl mx-auto px-4 h-14 flex items-center justify-between gap-4">
           <Link href={returnUrl} className="text-sm font-medium text-blue-950 hover:text-gray-700">
             ← Retour au catalogue
+          </Link>
+          <Link href="/" className="shrink-0 text-right text-base font-black uppercase italic leading-none text-blue-950 sm:text-xl">
+            L&apos;ÂME DU MAILLOT
           </Link>
         </div>
       </header>
@@ -151,7 +154,7 @@ export function ProductDetail({ product }: { product: Maillot }) {
             <button
               type="button"
               onClick={handleAddToCart}
-              className="mt-8 w-full bg-blue-950 hover:bg-blue-900 text-white text-sm font-semibold py-4 rounded-xl transition-colors"
+              className="mt-8 w-full rounded-xl bg-blue-950 py-4 text-sm font-semibold text-white shadow-lg shadow-blue-950/20 transition-colors hover:bg-blue-800"
             >
               Ajouter au panier — {product.price.toFixed(2)} €
             </button>

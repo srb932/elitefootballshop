@@ -1,0 +1,6 @@
+import { prisma } from "@/lib/prisma"
+import { z } from "zod"
+
+const payload = z.object({ name: z.string().trim().min(2).max(100), email: z.string().trim().email().max(255), subject: z.string().trim().min(2).max(120), message: z.string().trim().min(2).max(5000), visitorToken: z.string().uuid().optional() })
+export async function GET(request: Request) { const token = new URL(request.url).searchParams.get("token"); if (!token) return Response.json({ ticket: null }); const ticket = await prisma.supportTicket.findUnique({ where: { visitorToken: token }, include: { messages: { orderBy: { createdAt: "asc" }, select: { id: true, body: true, isAdmin: true, createdAt: true } } } }); return Response.json({ ticket }) }
+export async function POST(request: Request) { const result = payload.safeParse(await request.json()); if (!result.success) return Response.json({ error: "Veuillez remplir correctement tous les champs." }, { status: 400 }); const { name, email, subject, message, visitorToken } = result.data; const ticket = await prisma.supportTicket.create({ data: { name, email, subject, visitorToken, messages: { create: { body: message } } } }); await prisma.adminNotification.create({ data: { title: "Nouveau message support", body: `${name} · ${subject}`, type: "support" } }); return Response.json({ id: ticket.id }, { status: 201 }) }

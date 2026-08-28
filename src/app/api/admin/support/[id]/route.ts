@@ -1,0 +1,5 @@
+import { getAdmin } from "@/lib/admin"
+import { prisma } from "@/lib/prisma"
+import { z } from "zod"
+const payload = z.object({ body: z.string().trim().min(2).max(5000) })
+export async function PATCH(request: Request, context: RouteContext<"/api/admin/support/[id]">) { const admin = await getAdmin(); if (!admin) return Response.json({ error: "Accès administrateur requis" }, { status: 403 }); const { id } = await context.params; const result = payload.safeParse(await request.json()); if (!result.success) return Response.json({ error: "Réponse invalide" }, { status: 400 }); const ticket = await prisma.supportTicket.update({ where: { id }, data: { status: "ANSWERED", messages: { create: { body: result.data.body, isAdmin: true, authorId: admin.id } } } }); await prisma.adminActivity.create({ data: { actorId: admin.id, action: "Réponse au support préparée", entityType: "SupportTicket", entityId: id } }); return Response.json({ email: ticket.email, subject: ticket.subject, body: result.data.body }) }

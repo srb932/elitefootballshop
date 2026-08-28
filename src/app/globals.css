@@ -2,7 +2,12 @@
 
 /* Ton fond gris pour la boutique */
 body {
-  background-color: #f4f6f9;
+  background: radial-gradient(circle at top right, #dbeafe 0, #edf4ff 35%, #f8fbff 100%);
   margin: 0;
   padding: 0;
+}
+
+::selection {
+  background: #e11d48;
+  color: white;
 }

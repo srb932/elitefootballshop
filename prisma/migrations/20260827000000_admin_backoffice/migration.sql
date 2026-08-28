@@ -1,0 +1,20 @@
+-- Back-office EliteFootballShop: commandes sur demande, sans gestion de stock.
+ALTER TABLE "User" ADD COLUMN "lastSeen" TIMESTAMP(3), ADD COLUMN "lastPath" TEXT;
+ALTER TABLE "Product" DROP COLUMN "stock", ADD COLUMN "isActive" BOOLEAN NOT NULL DEFAULT true, ADD COLUMN "isFeatured" BOOLEAN NOT NULL DEFAULT false, ADD COLUMN "oldPrice" DOUBLE PRECISION, ADD COLUMN "sizes" TEXT[] NOT NULL DEFAULT ARRAY['S','M','L','XL','XXL'];
+CREATE TYPE "PaymentStatus" AS ENUM ('PENDING', 'PAID', 'FAILED', 'REFUNDED');
+CREATE TYPE "ShippingStatus" AS ENUM ('PENDING', 'PREPARING', 'SHIPPED', 'DELIVERED', 'CANCELLED');
+ALTER TABLE "Order" ALTER COLUMN "userId" DROP NOT NULL, ADD COLUMN "guestEmail" TEXT, ADD COLUMN "paymentStatus" "PaymentStatus" NOT NULL DEFAULT 'PENDING', ADD COLUMN "shippingStatus" "ShippingStatus" NOT NULL DEFAULT 'PENDING', ADD COLUMN "shippingAddress" JSONB, ADD COLUMN "trackingNumber" TEXT;
+ALTER TABLE "OrderItem" ALTER COLUMN "productId" DROP NOT NULL, ADD COLUMN "productName" TEXT NOT NULL DEFAULT '';
+ALTER TABLE "OrderItem" ALTER COLUMN "productName" DROP DEFAULT;
+ALTER TABLE "Order" DROP CONSTRAINT "Order_userId_fkey", ADD CONSTRAINT "Order_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "OrderItem" DROP CONSTRAINT "OrderItem_productId_fkey", ADD CONSTRAINT "OrderItem_productId_fkey" FOREIGN KEY ("productId") REFERENCES "Product"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+CREATE TABLE "Cart" ("id" TEXT NOT NULL, "userId" TEXT, "sessionId" TEXT, "items" JSONB NOT NULL, "total" DOUBLE PRECISION NOT NULL DEFAULT 0, "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP, "updatedAt" TIMESTAMP(3) NOT NULL, CONSTRAINT "Cart_pkey" PRIMARY KEY ("id"));
+CREATE UNIQUE INDEX "Cart_sessionId_key" ON "Cart"("sessionId");
+CREATE INDEX "Cart_updatedAt_idx" ON "Cart"("updatedAt");
+ALTER TABLE "Cart" ADD CONSTRAINT "Cart_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+CREATE TABLE "AdminActivity" ("id" TEXT NOT NULL, "actorId" TEXT, "action" TEXT NOT NULL, "entityType" TEXT NOT NULL, "entityId" TEXT, "details" JSONB, "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP, CONSTRAINT "AdminActivity_pkey" PRIMARY KEY ("id"));
+CREATE INDEX "AdminActivity_createdAt_idx" ON "AdminActivity"("createdAt");
+ALTER TABLE "AdminActivity" ADD CONSTRAINT "AdminActivity_actorId_fkey" FOREIGN KEY ("actorId") REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+CREATE TABLE "AdminNotification" ("id" TEXT NOT NULL, "userId" TEXT, "title" TEXT NOT NULL, "body" TEXT, "type" TEXT NOT NULL DEFAULT 'info', "readAt" TIMESTAMP(3), "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP, CONSTRAINT "AdminNotification_pkey" PRIMARY KEY ("id"));
+CREATE INDEX "AdminNotification_readAt_createdAt_idx" ON "AdminNotification"("readAt", "createdAt");
+ALTER TABLE "AdminNotification" ADD CONSTRAINT "AdminNotification_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE;

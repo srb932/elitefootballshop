@@ -24,6 +24,8 @@ import { AuthNav } from "../components/auth/AuthNav"
 import { CartView } from "../components/cart/CartView"
 import { useCartStore } from "../store/cartStore"
 import { ClubLogo } from "../components/catalog/ClubLogo"
+import { NewsletterPopup } from "@/components/catalog/NewsletterPopup"
+import { BrandHomeButton } from "@/components/layout/BrandHomeButton"
 
 // =========================================================================
 // COMPOSANT HERO IMMERSIF - VERSION ÉPURÉE (Plein Écran, Barre Cachée)
@@ -90,7 +92,7 @@ function HeroSection() {
               const el = document.getElementById("recherche-ancre");
               if (el) el.scrollIntoView({ behavior: "smooth" });
             }}
-            className="inline-flex items-center justify-center px-8 py-3.5 text-xs font-bold uppercase tracking-widest text-white bg-blue-950 rounded-lg hover:bg-black border border-blue-900/50 transition-all shadow-xl active:scale-95"
+            className="inline-flex items-center justify-center rounded-lg border border-blue-900 bg-blue-950 px-8 py-3.5 text-xs font-bold uppercase tracking-widest text-white shadow-xl transition-all hover:bg-blue-800 active:scale-95"
           >
             Découvrir les maillots
           </button>
@@ -198,7 +200,8 @@ function CatalogContent() {
   }
 
   return (
-    <div className="min-h-screen bg-[#f4f6f9] antialiased text-gray-900 font-[family-name:var(--font-inter)]">
+    <div className="min-h-screen bg-[#edf4ff] antialiased text-gray-900 font-[family-name:var(--font-inter)]">
+      <NewsletterPopup />
       <PromoBanner />
 
       {authBanner && (
@@ -209,23 +212,17 @@ function CatalogContent() {
 
       <header className="bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between gap-4">
-          <button type="button" onClick={goHome} className="text-left shrink-0">
-            <span className="text-xl md:text-2xl font-black text-blue-950 uppercase italic leading-none">
-              L&apos;ÂME DU MAILLOT
-            </span>
-            <span className="text-[10px] text-gray-500 font-normal tracking-widest uppercase block mt-0.5">
-              Le repaire du supporter
-            </span>
-          </button>
+          <BrandHomeButton onHome={goHome} />
 
           {/* Zone Contact / Connexion avec la police Inter, majuscules et espacement soigné */}
           <div className="flex items-center gap-2">
-            <Link
-              href="/contact"
+            <button
+              type="button"
+              onClick={() => window.dispatchEvent(new Event("elite:open-support"))}
               className="hidden sm:inline-flex px-4 py-2 text-xs font-semibold tracking-wider uppercase text-gray-700 border border-gray-200 rounded-lg hover:border-blue-950 hover:text-blue-950 hover:bg-gray-50 transition-all duration-200"
             >
               Contact
-            </Link>
+            </button>
 
             <AuthNav onLoginClick={() => setAuthOpen(true)} />
 
@@ -328,9 +325,9 @@ function CatalogContent() {
             <span>Support 7j/7</span>
           </div>
           <div className="flex gap-4">
-            <Link href="/contact" className="hover:text-blue-950 transition-colors">
+            <button type="button" onClick={() => window.dispatchEvent(new Event("elite:open-support"))} className="hover:text-blue-950 transition-colors">
               Contact
-            </Link>
+            </button>
             <Link href="/guide-maillots" className="hover:text-blue-950 transition-colors">
               Guide images
             </Link>

@@ -1,0 +1,4 @@
+import { prisma } from "@/lib/prisma"
+import { z } from "zod"
+const payload = z.object({ token: z.string().uuid(), body: z.string().trim().min(1).max(5000) })
+export async function POST(request: Request, context: RouteContext<"/api/support/[id]/messages">) { const { id } = await context.params; const result = payload.safeParse(await request.json()); if (!result.success) return Response.json({ error: "Message invalide" }, { status: 400 }); const ticket = await prisma.supportTicket.findFirst({ where: { id, visitorToken: result.data.token } }); if (!ticket) return Response.json({ error: "Conversation introuvable" }, { status: 404 }); await prisma.supportMessage.create({ data: { ticketId: id, body: result.data.body } }); await prisma.adminNotification.create({ data: { title: "Nouveau message support", body: `${ticket.name} · ${ticket.subject}`, type: "support" } }); return Response.json({ ok: true }) }

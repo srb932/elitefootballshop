@@ -203,7 +203,7 @@ export function CartView({
             <div className="flex gap-2">
               <input
                 type="text"
-                placeholder="BIENVENUE10"
+                placeholder="Entrez votre code promo"
                 value={promoCode}
                 onChange={(e) => setPromoCode(e.target.value)}
                 className={inputClass}
