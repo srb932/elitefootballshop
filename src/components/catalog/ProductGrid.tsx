@@ -1,3 +1,4 @@
+import Image from "next/image"
 import Link from "next/link"
 import type { Maillot } from "@/types/product"
 
@@ -77,15 +78,21 @@ export function ProductGrid({
               )}
 
               <div className="relative bg-gray-50 h-48 md:h-56 flex items-center justify-center p-4 overflow-hidden">
-                <img
+                <Image
                   src={maillot.imageFront}
                   alt={`${maillot.name} avant`}
-                  className="h-full w-auto object-contain transition-opacity duration-300 group-hover:opacity-0"
+                  fill
+                  sizes="(max-width: 768px) 45vw, (max-width: 1024px) 30vw, 22vw"
+                  className="object-contain p-4 transition-opacity duration-300 group-hover:opacity-0"
+                  loading="lazy"
                 />
-                <img
+                <Image
                   src={maillot.imageBack}
                   alt={`${maillot.name} arrière`}
-                  className="absolute h-[calc(100%-2rem)] w-auto object-contain opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+                  fill
+                  sizes="(max-width: 768px) 45vw, (max-width: 1024px) 30vw, 22vw"
+                  className="object-contain p-4 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+                  loading="lazy"
                 />
               </div>
 
@@ -98,7 +105,9 @@ export function ProductGrid({
                 </h3>
                 <div className="flex items-baseline gap-2 mt-3">
                   <span className="text-lg font-bold text-gray-900">{maillot.price.toFixed(2)} €</span>
-                  <span className="text-xs text-gray-400 line-through">{maillot.oldPrice.toFixed(2)} €</span>
+                  {maillot.section === "promo" && (
+                    <span className="text-xs text-gray-400 line-through">{maillot.oldPrice.toFixed(2)} €</span>
+                  )}
                 </div>
                 <span className="mt-3 block w-full text-center bg-blue-950 text-white text-xs font-semibold uppercase py-2.5 rounded-lg group-hover:bg-gray-900 transition-colors">
                   Voir le maillot

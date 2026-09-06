@@ -1,7 +1,20 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  images: {
+    // 70 = fond du hero (poids réduit), 75 = valeur par défaut de next/image ailleurs
+    qualities: [70, 75],
+    // Autorise le "?v=<date>" ajouté aux images de maillots/logo pour casser
+    // le cache quand un fichier est remplacé sous le même nom (voir
+    // resolve-maillot-images.ts). Restreint aux dossiers d'images locaux du
+    // site, pas de chemin arbitraire.
+    localPatterns: [
+      { pathname: "/maillots/**" },
+      { pathname: "/logos/**" },
+      { pathname: "/logo-v2.png" },
+      { pathname: "/uploads/**" },
+    ],
+  },
 };
 
 export default nextConfig;

@@ -1,12 +1,14 @@
 "use client"
 
 import { useState } from "react"
+import Image from "next/image"
 import Link from "next/link"
 import { useRouter, useSearchParams } from "next/navigation"
 import type { Maillot } from "@/types/product"
 import { SIZES } from "@/types/product"
 import { useCartStore } from "@/store/cartStore"
 import { PromoBanner } from "@/components/catalog/PromoBanner"
+import { BrandMark } from "@/components/layout/BrandMark"
 
 type ViewSide = "front" | "back"
 
@@ -53,11 +55,11 @@ export function ProductDetail({ product }: { product: Maillot }) {
 
       <header className="bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 h-14 flex items-center justify-between gap-4">
+          <Link href="/" className="shrink-0 hover:opacity-80">
+            <BrandMark size="sm" />
+          </Link>
           <Link href={returnUrl} className="text-sm font-medium text-blue-950 hover:text-gray-700">
             ← Retour au catalogue
-          </Link>
-          <Link href="/" className="shrink-0 text-right text-base font-black uppercase italic leading-none text-blue-950 sm:text-xl">
-            L&apos;ÂME DU MAILLOT
           </Link>
         </div>
       </header>
@@ -65,11 +67,14 @@ export function ProductDetail({ product }: { product: Maillot }) {
       <main className="max-w-6xl mx-auto px-4 py-8">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <div className="bg-white border border-gray-200 rounded-2xl p-4">
-            <div className="bg-gray-50 h-80 md:h-[28rem] flex items-center justify-center rounded-xl mb-4">
-              <img
+            <div className="relative bg-gray-50 h-80 md:h-[28rem] rounded-xl mb-4 overflow-hidden">
+              <Image
                 src={currentImage}
                 alt={`${product.name} ${side === "front" ? "avant" : "arrière"}`}
-                className="h-full w-auto object-contain"
+                fill
+                sizes="(max-width: 768px) 90vw, 45vw"
+                priority
+                className="object-contain p-6"
               />
             </div>
 
@@ -83,11 +88,13 @@ export function ProductDetail({ product }: { product: Maillot }) {
                     side === s ? "border-blue-950 ring-2 ring-blue-950/20" : "border-gray-200 hover:border-gray-400"
                   }`}
                 >
-                  <div className="h-20 flex items-center justify-center bg-gray-50 rounded-lg mb-1">
-                    <img
+                  <div className="relative h-20 bg-gray-50 rounded-lg mb-1 overflow-hidden">
+                    <Image
                       src={s === "front" ? product.imageFront : product.imageBack}
                       alt={s === "front" ? "Avant" : "Arrière"}
-                      className="h-full w-auto object-contain"
+                      fill
+                      sizes="140px"
+                      className="object-contain p-2"
                     />
                   </div>
                   <span className="text-[10px] font-semibold uppercase text-gray-600">
@@ -104,8 +111,15 @@ export function ProductDetail({ product }: { product: Maillot }) {
 
             <div className="flex items-baseline gap-2 mt-4">
               <span className="text-3xl font-bold text-gray-900">{product.price.toFixed(2)} €</span>
-              <span className="text-sm text-gray-400 line-through">{product.oldPrice.toFixed(2)} €</span>
+              {product.section === "promo" && (
+                <span className="text-sm text-gray-400 line-through">{product.oldPrice.toFixed(2)} €</span>
+              )}
             </div>
+            {product.section === "promo" && (
+              <span className="mt-2 inline-block w-fit rounded-full bg-red-100 px-2.5 py-1 text-[11px] font-bold uppercase text-red-700">
+                Promo d&apos;ouverture
+              </span>
+            )}
 
             <div className="mt-8">
               <label className="text-xs font-semibold uppercase text-gray-700 block mb-3">Taille *</label>

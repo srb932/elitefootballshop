@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "node scripts/generate-image-manifest.mjs && next dev",
     "build": "node scripts/generate-image-manifest.mjs && prisma generate && next build",
     "start": "next start",
     "lint": "eslint"

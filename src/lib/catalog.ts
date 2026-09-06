@@ -45,6 +45,10 @@ export function getProductsForClub(products: Maillot[], clubSlug: string): Maill
   return products.filter((p) => p.clubSlug === clubSlug)
 }
 
-export function getClubName(league: string, clubSlug: string): string | undefined {
-  return CLUBS_BY_LEAGUE[league]?.find((c) => slugify(c) === clubSlug)
+export function getClubName(league: string, clubSlug: string, products: Maillot[] = []): string | undefined {
+  const fromLeague = CLUBS_BY_LEAGUE[league]?.find((c) => slugify(c) === clubSlug)
+  if (fromLeague) return fromLeague
+  // Championnats gérés depuis l'admin (Pays/Nations, Autre...) : le nom du
+  // club n'est pas codé en dur, on le retrouve dans les produits chargés.
+  return products.find((p) => p.league === league && p.clubSlug === clubSlug)?.club
 }

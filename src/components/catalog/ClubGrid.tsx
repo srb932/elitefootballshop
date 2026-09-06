@@ -1,5 +1,6 @@
 "use client"
 
+import { useMemo } from "react"
 import type { Maillot } from "@/types/product"
 import { getClubsForLeague } from "@/lib/catalog"
 import { ClubLogo } from "./ClubLogo"
@@ -13,7 +14,15 @@ export function ClubGrid({
   products: Maillot[]
   onSelectClub: (clubSlug: string) => void
 }) {
-  const clubs = getClubsForLeague(league, products)
+  const clubs = useMemo(() => getClubsForLeague(league, products), [league, products])
+
+  const availableBySlug = useMemo(() => {
+    const map = new Map<string, number>()
+    for (const p of products) {
+      if (p.available) map.set(p.clubSlug, (map.get(p.clubSlug) ?? 0) + 1)
+    }
+    return map
+  }, [products])
 
   return (
     <div>
@@ -24,8 +33,7 @@ export function ClubGrid({
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
         {clubs.map((club) => {
-          const clubProducts = products.filter((p) => p.clubSlug === club.slug)
-          const available = clubProducts.filter((p) => p.available).length
+          const available = availableBySlug.get(club.slug) ?? 0
           return (
             <button
               key={club.slug}

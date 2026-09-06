@@ -1,5 +1,16 @@
-import { EXISTING_MAILLOT_FILES } from "./image-manifest"
+import { EXISTING_MAILLOT_FILES, MAILLOT_FILE_VERSIONS } from "./image-manifest"
 import type { MaillotType } from "./maillot-images"
+
+/**
+ * Ajoute la date de dernière modification du fichier en paramètre d'URL.
+ * Sert à casser le cache navigateur automatiquement quand une image est
+ * remplacée sous le même nom (sinon l'ancienne version peut rester affichée
+ * jusqu'à un rechargement forcé).
+ */
+function withVersion(file: string): string {
+  const version = MAILLOT_FILE_VERSIONS[file]
+  return version ? `/maillots/${file}?v=${version}` : `/maillots/${file}`
+}
 
 /** Alias fichiers spéciaux (domicile 2025-26) */
 const SPECIAL_FILES: Record<string, { front: string; back: string }> = {
@@ -50,8 +61,8 @@ export function resolveMaillotImages(
   for (const c of candidates) {
     if (pairExists(c.front, c.back)) {
       return {
-        imageFront: `/maillots/${c.front}`,
-        imageBack: `/maillots/${c.back}`,
+        imageFront: withVersion(c.front),
+        imageBack: withVersion(c.back),
         frontFile: c.front,
         backFile: c.back,
         available: true,

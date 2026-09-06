@@ -18,9 +18,9 @@ export function LeagueNav({
             key={league}
             type="button"
             onClick={() => onSelect(league)}
-            className={`px-4 py-2 text-xs font-bold uppercase tracking-wide rounded-md transition-colors ${
+            className={`px-4 py-2 text-xs font-bold uppercase tracking-wide rounded-md transition-all duration-150 ease-out active:scale-90 active:duration-75 ${
               active
-                ? "bg-blue-950 text-white"
+                ? "bg-blue-950 text-white shadow-sm"
                 : "bg-white text-gray-700 border border-gray-300 hover:border-blue-950 hover:text-blue-950"
             }`}
           >

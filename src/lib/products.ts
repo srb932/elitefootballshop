@@ -5,21 +5,9 @@
 import { CLUBS_BY_LEAGUE } from "./clubs"
 import { MAILLOT_VARIANTS } from "./maillot-images"
 import { resolveMaillotImages } from "./resolve-maillot-images"
+import { deriveAutoSections } from "./trending"
 import type { Maillot, MaillotType, ProductSection } from "@/types/product"
 import { PRODUCT_OLD_PRICE, PRODUCT_PRICE } from "@/types/product"
-
-const SECTION_BY_CLUB: Record<string, ProductSection> = {
-  "Paris Saint-Germain": "vedette",
-  "Real Madrid": "tendance",
-  "FC Barcelona": "tendance",
-  "Liverpool FC": "tendance",
-  "Olympique Marseille": "nouveau",
-  "AS Monaco": "nouveau",
-  "Olympique Lyonnais": "promo",
-  Arsenal: "promo",
-  "Manchester City": "promo",
-  "Bayern Munich": "tendance",
-}
 
 export function slugify(text: string): string {
   return text
@@ -40,16 +28,7 @@ function buildMaillot(
 ): Maillot {
   const clubSlug = slugify(club)
   const images = resolveMaillotImages(clubSlug, type, code)
-  const isFeaturedHome = type === "domicile" && code === "2526"
-  const section = isFeaturedHome ? SECTION_BY_CLUB[club] : undefined
   const id = `${slugify(league)}-${clubSlug}-${type}-${code}`
-
-  const badgeMap: Record<ProductSection, string> = {
-    vedette: "VEDETTE",
-    tendance: "TENDANCE",
-    nouveau: "NOUVEAU",
-    promo: "PROMO",
-  }
 
   return {
     id,
@@ -62,8 +41,8 @@ function buildMaillot(
     type,
     typeLabel,
     saison,
-    badge: section && images.available ? badgeMap[section] : "",
-    section: images.available ? section : undefined,
+    badge: "",
+    section: undefined,
     available: images.available,
     imageFront: images.imageFront,
     imageBack: images.imageBack,
@@ -72,13 +51,16 @@ function buildMaillot(
   }
 }
 
-export const MOCK_MAILLOTS: Maillot[] = Object.entries(CLUBS_BY_LEAGUE).flatMap(
-  ([league, clubs]) =>
+// Les sections "À la une / Tendances / Nouveautés / Promos" sont calculées
+// automatiquement à partir du catalogue réellement disponible — voir
+// ./trending. Les mises en avant manuelles de l'admin s'appliquent ensuite
+// par-dessus (voir applyOverrides), au moment de l'affichage.
+export const MOCK_MAILLOTS: Maillot[] = deriveAutoSections(
+  Object.entries(CLUBS_BY_LEAGUE).flatMap(([league, clubs]) =>
     clubs.flatMap((club) =>
-      MAILLOT_VARIANTS.map((v) =>
-        buildMaillot(league, club, v.type, v.typeLabel, v.saison, v.code)
-      )
+      MAILLOT_VARIANTS.map((v) => buildMaillot(league, club, v.type, v.typeLabel, v.saison, v.code))
     )
+  )
 )
 
 export function getProductById(id: string): Maillot | undefined {

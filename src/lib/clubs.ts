@@ -1,4 +1,9 @@
-/** Clubs par championnat — saison 2025-26 */
+/**
+ * Clubs par championnat — saison 2026-2027.
+ * Compositions vérifiées (promotions/relégations) via Wikipédia et sources
+ * spécialisées en septembre 2026. Ligue 2 est passée à 18 clubs (comme
+ * Ligue 1) depuis la réforme de 2024-25.
+ */
 export const CLUBS_BY_LEAGUE: Record<string, string[]> = {
   "Ligue 1": [
     "Paris Saint-Germain",
@@ -12,35 +17,33 @@ export const CLUBS_BY_LEAGUE: Record<string, string[]> = {
     "RC Strasbourg",
     "Toulouse FC",
     "Stade Brestois",
-    "FC Nantes",
-    "Stade de Reims",
-    "AJ Auxerre",
+    "FC Lorient",
+    "Paris FC",
     "Angers SCO",
     "Le Havre AC",
-    "AS Saint-Étienne",
-    "Montpellier HSC",
+    "AJ Auxerre",
+    "ESTAC Troyes",
+    "Le Mans FC",
   ],
   "Ligue 2": [
-    "Paris FC",
-    "FC Lorient",
+    "AS Saint-Étienne",
+    "Stade de Reims",
+    "Montpellier HSC",
+    "FC Nantes",
     "FC Metz",
-    "ESTAC Troyes",
-    "Stade Lavallois",
-    "AC Ajaccio",
-    "Pau FC",
-    "Rodez AF",
-    "Amiens SC",
-    "En Avant Guingamp",
-    "SC Bastia",
-    "USL Dunkerque",
     "Annecy FC",
     "Red Star FC",
-    "FC Martigues",
+    "Rodez AF",
+    "AS Nancy Lorraine",
+    "FC Sochaux-Montbéliard",
+    "USL Dunkerque",
+    "Pau FC",
+    "En Avant Guingamp",
+    "US Boulogne",
     "Clermont Foot",
     "Grenoble Foot 38",
-    "SM Caen",
-    "US Boulogne",
-    "Valenciennes FC",
+    "Stade Lavallois",
+    "Dijon FCO",
   ],
   "Premier League": [
     "Arsenal",
@@ -49,20 +52,20 @@ export const CLUBS_BY_LEAGUE: Record<string, string[]> = {
     "Brentford FC",
     "Brighton & Hove Albion",
     "Chelsea FC",
+    "Coventry City",
     "Crystal Palace",
     "Everton FC",
     "Fulham FC",
+    "Hull City",
     "Ipswich Town",
-    "Leicester City",
+    "Leeds United",
     "Liverpool FC",
     "Manchester City",
     "Manchester United",
     "Newcastle United",
     "Nottingham Forest",
-    "Southampton FC",
+    "Sunderland AFC",
     "Tottenham Hotspur",
-    "West Ham United",
-    "Wolverhampton Wanderers",
   ],
   "La Liga": [
     "Real Madrid",
@@ -76,15 +79,15 @@ export const CLUBS_BY_LEAGUE: Record<string, string[]> = {
     "Athletic Club",
     "CA Osasuna",
     "Getafe CF",
-    "Girona FC",
-    "RCD Mallorca",
+    "RCD Espanyol",
     "Rayo Vallecano",
     "RC Celta de Vigo",
-    "UD Las Palmas",
     "Deportivo Alavés",
-    "Real Valladolid",
-    "RCD Espanyol",
-    "CD Leganés",
+    "Levante UD",
+    "Elche CF",
+    "Racing de Santander",
+    "RC Deportivo La Coruña",
+    "Málaga CF",
   ],
   "Serie A": [
     "Inter Milan",
@@ -100,13 +103,13 @@ export const CLUBS_BY_LEAGUE: Record<string, string[]> = {
     "AC Monza",
     "Genoa CFC",
     "Udinese Calcio",
-    "Hellas Verona",
     "US Lecce",
     "Cagliari Calcio",
-    "Empoli FC",
     "Parma Calcio",
     "Venezia FC",
     "Como 1907",
+    "US Sassuolo",
+    "Frosinone Calcio",
   ],
   Bundesliga: [
     "Bayern Munich",
@@ -115,7 +118,6 @@ export const CLUBS_BY_LEAGUE: Record<string, string[]> = {
     "RB Leipzig",
     "VfB Stuttgart",
     "Eintracht Frankfurt",
-    "VfL Wolfsburg",
     "SC Freiburg",
     "TSG Hoffenheim",
     "Borussia Mönchengladbach",
@@ -123,11 +125,21 @@ export const CLUBS_BY_LEAGUE: Record<string, string[]> = {
     "1. FSV Mainz 05",
     "FC Augsburg",
     "1. FC Union Berlin",
-    "VfL Bochum",
-    "1. FC Heidenheim",
-    "FC St. Pauli",
-    "Holstein Kiel",
+    "Hamburger SV",
+    "1. FC Köln",
+    "FC Schalke 04",
+    "SV Elversberg",
+    "SC Paderborn 07",
   ],
 }
 
-export const LEAGUE_OPTIONS = ["Accueil", ...Object.keys(CLUBS_BY_LEAGUE)] as const
+/**
+ * Catégories gérées entièrement depuis l'admin (base de données), en plus
+ * des championnats ci-dessus : "Pays/Nations" pour les équipes nationales,
+ * "Autre" pour tout maillot qui ne rentre dans aucun championnat du site.
+ * Voir src/lib/db-catalog.ts.
+ */
+export const CUSTOM_LEAGUES = ["Pays/Nations", "Autre"] as const
+export type CustomLeague = (typeof CUSTOM_LEAGUES)[number]
+
+export const LEAGUE_OPTIONS = ["Accueil", ...Object.keys(CLUBS_BY_LEAGUE), ...CUSTOM_LEAGUES] as const

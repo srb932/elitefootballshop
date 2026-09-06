@@ -225,6 +225,13 @@ export function CartView({
             <span className="font-medium">Total</span>
             <span className="text-2xl font-semibold">{total.toFixed(2)} €</span>
           </div>
+
+          <div className="flex items-center gap-2 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-700">
+            <svg className="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+            </svg>
+            Livraison offerte pour le lancement de la boutique
+          </div>
         </div>
 
         {/* Livraison + paiement */}
@@ -284,7 +291,7 @@ export function CartView({
 
             <div className="pt-2 border-t border-gray-100">
               <p className="text-xs text-gray-500 mb-4">
-                Paiement sécurisé par Stripe · Livraison gratuite dès 3 maillots
+                Paiement sécurisé par Stripe · Livraison offerte pour le lancement de la boutique
               </p>
 
               {error && (

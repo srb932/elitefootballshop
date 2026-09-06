@@ -104,6 +104,8 @@ model Product {
   isFeatured  Boolean  @default(false)
   oldPrice    Float?
   sizes       String[] @default(["S", "M", "L", "XL", "XXL"])
+  typeLabel   String   @default("Domicile")
+  saison      String   @default("")
   clubId      String
 
   club       Club        @relation(fields: [clubId], references: [id])
@@ -254,6 +256,25 @@ model Review {
 
   user    User    @relation(fields: [userId], references: [id])
   product Product @relation(fields: [productId], references: [id])
+}
+
+/// Mise en avant manuelle d'un maillot du catalogue (fichiers) depuis l'admin.
+/// `productId` est l'identifiant du Maillot (ex: "ligue-1-psg-domicile-2627"),
+/// pas une relation vers Product : le catalogue vendu vient des fichiers du
+/// site (voir src/lib/products.ts), cette table ne fait que surcharger le
+/// calcul automatique des sections "À la une / Tendances / Nouveautés / Promos".
+model ProductHighlight {
+  productId String        @id
+  section   ProductSection?
+  hidden    Boolean       @default(false)
+  updatedAt DateTime      @updatedAt
+}
+
+enum ProductSection {
+  vedette
+  tendance
+  nouveau
+  promo
 }
 
 model Favorite {

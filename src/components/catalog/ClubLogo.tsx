@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import Image from "next/image"
 import { getClubShortName } from "@/lib/club-logos"
 
 export function ClubLogo({
@@ -18,11 +19,12 @@ export function ClubLogo({
 
   if (srcIndex < sources.length) {
     return (
-      <img
+      <Image
         src={sources[srcIndex]}
         alt={`Logo ${name}`}
         width={size}
         height={size}
+        unoptimized={sources[srcIndex].endsWith(".svg")}
         onError={() => setSrcIndex((i) => i + 1)}
         className="rounded-full object-contain bg-white border border-gray-100 shrink-0 p-1"
         style={{ width: size, height: size }}
