@@ -1,10 +1,22 @@
 @import "tailwindcss";
 
+/*
+ * Empêche tout débordement horizontal (ex: l'effet de zoom du hero ou les
+ * cercles décoratifs de la popup newsletter qui dépassent volontairement de
+ * leur conteneur) de créer une bande vide et un décalage sur mobile.
+ */
+html {
+  overflow-x: hidden;
+  max-width: 100vw;
+}
+
 /* Ton fond gris pour la boutique */
 body {
   background: radial-gradient(circle at top right, #dbeafe 0, #edf4ff 35%, #f8fbff 100%);
   margin: 0;
   padding: 0;
+  overflow-x: hidden;
+  max-width: 100vw;
 }
 
 ::selection {
