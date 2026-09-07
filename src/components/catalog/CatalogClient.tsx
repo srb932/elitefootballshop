@@ -345,6 +345,9 @@ function CatalogContent({
             <button type="button" onClick={() => window.dispatchEvent(new Event("elite:open-support"))} className="hover:text-blue-950 transition-colors">
               Contact
             </button>
+            <Link href="/faq" className="hover:text-blue-950 transition-colors">
+              FAQ
+            </Link>
             <Link href="/guide-maillots" className="hover:text-blue-950 transition-colors">
               Guide images
             </Link>
