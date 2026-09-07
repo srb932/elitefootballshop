@@ -14,6 +14,11 @@ const nextConfig: NextConfig = {
       { pathname: "/logo-v2.png" },
       { pathname: "/uploads/**" },
     ],
+    // Images des maillots "Pays/Nations" / "Autre" uploadées depuis l'admin,
+    // hébergées sur Vercel Blob (voir actions.ts de /admin/products/custom).
+    remotePatterns: [
+      { protocol: "https", hostname: "*.public.blob.vercel-storage.com" },
+    ],
   },
 };
 

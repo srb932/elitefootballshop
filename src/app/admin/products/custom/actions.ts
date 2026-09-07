@@ -1,8 +1,7 @@
 "use server"
 
 import { revalidatePath } from "next/cache"
-import { mkdir, writeFile } from "fs/promises"
-import path from "path"
+import { put } from "@vercel/blob"
 import { requireAdmin } from "@/lib/admin"
 import { prisma } from "@/lib/prisma"
 import {
@@ -14,15 +13,20 @@ import {
   type CustomLeague,
 } from "@/lib/db-catalog"
 
-const UPLOAD_DIR = path.join(process.cwd(), "public", "uploads", "custom")
-
+// Vercel exécute le site sur un système de fichiers en lecture seule : on ne
+// peut pas écrire dans public/ au moment où un admin upload une image (ça
+// marche seulement en local). Vercel Blob stocke le fichier ailleurs et
+// renvoie une URL publique — voir BLOB_READ_WRITE_TOKEN dans .env.
 async function saveImage(file: File): Promise<string> {
-  await mkdir(UPLOAD_DIR, { recursive: true })
+  if (!process.env.BLOB_READ_WRITE_TOKEN) {
+    throw new Error(
+      "BLOB_READ_WRITE_TOKEN absent : crée un Blob Store dans ton dashboard Vercel (Storage → Create → Blob) et colle le token dans .env (et dans les variables d'environnement du projet sur Vercel)."
+    )
+  }
   const ext = (file.name.split(".").pop() || "png").toLowerCase().replace(/[^a-z0-9]/g, "") || "png"
-  const filename = `${crypto.randomUUID()}.${ext}`
-  const bytes = Buffer.from(await file.arrayBuffer())
-  await writeFile(path.join(UPLOAD_DIR, filename), bytes)
-  return `/uploads/custom/${filename}`
+  const filename = `custom/${crypto.randomUUID()}.${ext}`
+  const blob = await put(filename, file, { access: "public" })
+  return blob.url
 }
 
 function parseLeague(value: FormDataEntryValue | null): CustomLeague {
