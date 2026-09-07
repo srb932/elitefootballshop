@@ -1,3 +1,71 @@
-import Link from "next/link"; import { prisma } from "@/lib/prisma"; import { formatEuro } from "@/lib/admin"; import { EmptyState, PageHeader, StatusBadge } from "@/components/admin/AdminUi"
+import Link from "next/link"
+import { prisma } from "@/lib/prisma"
+import { formatEuro } from "@/lib/admin"
+import { EmptyState, PageHeader, StatusBadge } from "@/components/admin/AdminUi"
+
 export const dynamic = "force-dynamic"
-export default async function UsersPage() { const users = await prisma.user.findMany({ include: { orders: { select: { total: true, paymentStatus: true } } }, orderBy: { createdAt: "desc" }, take: 100 }); return <><PageHeader title="Utilisateurs" description="Comptes clients, activité récente et historique d’achat." />{users.length ? <div className="overflow-x-auto rounded-2xl bg-white shadow-sm ring-1 ring-slate-200"><table className="w-full min-w-[760px] text-sm"><thead className="border-b bg-slate-50 text-left text-xs uppercase text-slate-500"><tr><th className="p-4">Client</th><th>Inscription</th><th>Dernière activité</th><th>Commandes</th><th>Total dépensé</th><th>Statut</th><th /></tr></thead><tbody>{users.map((user) => { const paid = user.orders.filter(o => o.paymentStatus === "PAID"); return <tr key={user.id} className="border-b last:border-0"><td className="p-4"><p className="font-bold">{user.name || "Sans nom"}</p><p className="text-xs text-slate-500">{user.email}</p></td><td>{user.createdAt.toLocaleDateString("fr-FR")}</td><td>{user.lastSeen?.toLocaleString("fr-FR") || "—"}</td><td>{user.orders.length}</td><td className="font-bold">{formatEuro(paid.reduce((sum, order) => sum + order.total, 0))}</td><td><StatusBadge value={user.lastSeen && user.lastSeen > new Date(Date.now() - 5 * 60_000) ? "PAID" : "PENDING"} /></td><td className="p-4"><Link href={`/admin/users/${user.id}`} className="font-semibold text-blue-800">Ouvrir</Link></td></tr> })}</tbody></table></div> : <EmptyState>Aucun utilisateur inscrit.</EmptyState>}</> }
+
+export default async function UsersPage() {
+  const users = await prisma.user.findMany({
+    include: { orders: { select: { total: true, paymentStatus: true } } },
+    orderBy: { createdAt: "desc" },
+    take: 100,
+  })
+
+  return (
+    <>
+      <PageHeader title="Utilisateurs" description="Comptes clients, activité récente et historique d'achat." />
+      {users.length ? (
+        <div className="overflow-x-auto rounded-2xl bg-white shadow-sm ring-1 ring-slate-200">
+          <table className="w-full min-w-[760px] text-sm">
+            <thead className="border-b bg-slate-50 text-left text-xs uppercase text-slate-500">
+              <tr>
+                <th className="p-4">Client</th>
+                <th>Inscription</th>
+                <th>Dernière activité</th>
+                <th>Commandes</th>
+                <th>Total dépensé</th>
+                <th>Statut</th>
+                <th />
+              </tr>
+            </thead>
+            <tbody>
+              {users.map((user) => {
+                const paid = user.orders.filter((o) => o.paymentStatus === "PAID")
+                return (
+                  <tr key={user.id} className="border-b last:border-0">
+                    <td className="p-4">
+                      <div className="flex items-center gap-2">
+                        <p className="font-bold">{user.name || "Sans nom"}</p>
+                        {user.role === "ADMIN" && (
+                          <span className="rounded-full bg-blue-950 px-2 py-0.5 text-[10px] font-bold uppercase text-white">
+                            Admin
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-xs text-slate-500">{user.email}</p>
+                    </td>
+                    <td>{user.createdAt.toLocaleDateString("fr-FR")}</td>
+                    <td>{user.lastSeen?.toLocaleString("fr-FR") || "—"}</td>
+                    <td>{user.orders.length}</td>
+                    <td className="font-bold">{formatEuro(paid.reduce((sum, order) => sum + order.total, 0))}</td>
+                    <td>
+                      <StatusBadge value={user.lastSeen && user.lastSeen > new Date(Date.now() - 5 * 60_000) ? "PAID" : "PENDING"} />
+                    </td>
+                    <td className="p-4">
+                      <Link href={`/admin/users/${user.id}`} className="font-semibold text-blue-800">
+                        Ouvrir
+                      </Link>
+                    </td>
+                  </tr>
+                )
+              })}
+            </tbody>
+          </table>
+        </div>
+      ) : (
+        <EmptyState>Aucun utilisateur inscrit.</EmptyState>
+      )}
+    </>
+  )
+}
