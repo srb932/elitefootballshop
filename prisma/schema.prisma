@@ -26,9 +26,10 @@ model User {
   reviews        Review[]
   favorites      Favorite[]
   carts          Cart[]
-  activities     AdminActivity[]     @relation("AdminActor")
-  notifications  AdminNotification[]
-  supportReplies SupportMessage[]    @relation("SupportReplyAuthor")
+  activities        AdminActivity[]      @relation("AdminActor")
+  notifications     AdminNotification[]
+  supportReplies    SupportMessage[]     @relation("SupportReplyAuthor")
+  newsletterSent    NewsletterCampaign[] @relation("NewsletterCampaignSender")
 }
 
 enum Role {
@@ -241,9 +242,22 @@ enum SupportTicketStatus {
 }
 
 model NewsletterSubscriber {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  createdAt DateTime @default(now())
+  id             String    @id @default(cuid())
+  email          String    @unique
+  createdAt      DateTime  @default(now())
+  unsubscribedAt DateTime?
+}
+
+/// Journal des campagnes promo envoyées depuis l'admin (voir /admin/newsletter).
+model NewsletterCampaign {
+  id         String   @id @default(cuid())
+  subject    String
+  body       String   @db.Text
+  recipients Int
+  sentById   String?
+  createdAt  DateTime @default(now())
+
+  sentBy User? @relation("NewsletterCampaignSender", fields: [sentById], references: [id], onDelete: SetNull)
 }
 
 model Review {

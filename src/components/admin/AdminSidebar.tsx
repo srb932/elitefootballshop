@@ -10,6 +10,7 @@ import {
   ClipboardList,
   Globe2,
   LayoutDashboard,
+  Mail,
   Menu,
   MessageCircle,
   Settings,
@@ -44,6 +45,7 @@ const NAV_GROUPS = [
     label: "Clients",
     links: [
       ["Utilisateurs", "/admin/users", Users],
+      ["Newsletter", "/admin/newsletter", Mail],
       ["Support", "/admin/support", MessageCircle],
       ["Notifications", "/admin/notifications", Bell],
     ],
